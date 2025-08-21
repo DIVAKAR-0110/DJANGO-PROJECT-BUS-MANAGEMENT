@@ -1,0 +1,593 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+    <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  color: #333;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: box-shadow 0.3s ease;
+}
+
+header.scrolled {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: white;
+  transition: transform 0.3s ease;
+}
+.logo:hover {
+  transform: scale(1.1);
+}
+
+nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 20px;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+nav a::after {
+  content: '';
+  width: 0%;
+  height: 2px;
+  background: white;
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  transition: 0.3s;
+}
+nav a:hover {
+  color: #ffdd00;
+}
+nav a:hover::after {
+  width: 100%;
+}
+
+.container {
+  max-width: 800px;
+  margin: 50px auto;
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease-in;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step {
+  display: none;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.step.active {
+  display: block;
+}
+
+.progressbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  counter-reset: step;
+}
+
+.progressbar li {
+  list-style-type: none;
+  width: 25%;
+  position: relative;
+  text-align: center;
+  color: #333;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.progressbar li::before {
+  content: counter(step);
+  counter-increment: step;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #0077b6;
+  display: block;
+  margin: auto;
+  border-radius: 50%;
+  line-height: 30px;
+  background: white;
+  color: #0077b6;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.progressbar li::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 3px;
+  background: #0077b6;
+  top: 15px;
+  left: -50%;
+  z-index: -1;
+}
+
+.progressbar li:first-child::after {
+  content: none;
+}
+
+.progressbar li.active {
+  color: #ffffff;
+}
+
+.progressbar li.active::before {
+  border-color: #ffffff;
+  background: #0077b6;
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn {
+  padding: 12px 25px;
+  background: #a89292;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.btn:hover {
+  background: #005f8f;
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+input[type="text"], input[type="email"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus, input[type="email"]:focus {
+  border-color: #0077b6;
+  box-shadow: 0 0 5px rgba(0, 119, 182, 0.5);
+}
+
+label {
+  font-size: 16px;
+  margin-bottom: 10px;
+  display: block;
+  font-weight: bold;
+}
+
+.checkbox-label {
+  font-size: 14px;
+  user-select: none;
+}
+
+.checkbox-label input {
+  margin-right: 10px;
+}
+
+.success {
+  text-align: center;
+  font-size: 24px;
+  color: #28a745;
+  font-weight: bold;
+  animation: fadeIn 1s ease;
+}
+
+.step-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align:center;
+  color: #0077b6;
+  animation: fadeIn 1s ease;
+}
+
+.step-description {
+  font-size: 16px;
+  color: #333;
+}
+
+#termsContent {
+  height: 165px;
+  overflow-y: scroll;
+  padding: 15px;
+  border: 1px solid #0077b6;
+  margin-top: 15px;
+  background: #f1f1f1;
+  font-size: 14px;
+  border-radius: 5px;
+  transition: border 0.3s;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.hamburger span {
+  height: 3px;
+  width: 25px;
+  background: white;
+  margin: 4px 0;
+  transition: transform 0.3s ease;
+}
+
+.menu {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  nav {
+    display: none;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.9);
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    padding: 20px 0;
+    transition: all 0.3s ease-in-out;
+  }
+
+  nav.show {
+    display: flex;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}
+
+form {
+  background-color: #fff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: transform 0.3s ease;
+}
+
+form:hover {
+  transform: scale(1.01);
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form input[type="number"],
+form input[type="file"],
+form textarea,
+form select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+form input:focus,
+form textarea:focus,
+form select:focus {
+  border-color: #0072ff;
+  outline: none;
+}
+
+form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+form button {
+  padding: 12px;
+  background-color: #0072ff;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #005fce;
+}
+
+
+      #agreeCheck:checked ~ #proceedBtn {
+  background: #005f8f;
+  cursor: pointer;
+}
+
+#proceedBtn.enabled {
+  background-color: #005f8f;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+#proceedBtn.enabled:hover {
+  background:#00a4ff;
+  transform: scale(1.05);
+}
+
+      #password-tooltip {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+
+
+
+
+
+
+    </style>
+</head>
+<body>
+{% csrf_token %}
+
+  <header>
+    <div class="logo">BusManage</div>
+    <div class="hamburger" onclick="toggleMenu()" aria-label="Toggle menu" role="button" tabindex="0">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <nav id="navLinks">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <ul class="progressbar">
+      <li class="active">Start</li>
+      <li>Terms</li>
+      <li>Form</li>
+      <li>Submit</li>
+    </ul>
+
+    <!-- Step 1 -->
+    <div class="step active" id="step1">
+      <h2 class="step-title" style="text-align:center;">🎓 Welcome to the College Application</h2>
+      <p class="step-description" style="text-align:center;">
+        We’re excited to have your institution onboard! Please review the terms to ensure eligibility and compliance.
+      </p><br>
+      <center>
+        <button class="btn" onclick="nextStep(2)">
+          📄 View Terms and Conditions
+        </button>
+      </center>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" id="step2">
+      <h2 class="step-title">Terms and Conditions</h2>
+      <div id="termsContent">
+        <p>1. The college agrees to provide accurate and up-to-date information while submitting this form.</p>
+        <p>2. The authorized staff filling this form must be officially designated to act on behalf of the institution.</p>
+        <p>3. Misuse, misrepresentation, or submission of false documents may lead to disqualification and permanent blacklist.</p>
+        <p>4. All provided data will be used only for internal management and communication regarding bus transportation services.</p>
+        <p>5. By accepting these terms, the college consents to the use of submitted data as per our data policy.</p>
+        <p>6. This portal is only for colleges affiliated under the registered bus management consortium.</p>
+        <p>7. Technical support or queries can be directed to: support@yourdomain.com</p>
+      </div>
+      <center>
+        <label class="checkbox-label">
+          <input type="checkbox" id="agreeCheck" onchange="toggleProceed()">
+          ✅ I agree to the <a href="#">terms and conditions</a>
+        </label>
+        <br><br>
+        <button class="btn" onclick="nextStep(1)" disabled style="background-color: #0072ff;">
+          <- Back
+        </button>
+        <button class="btn" id="proceedBtn" onclick="nextStep(3)" disabled style="background-color: #0072ff;">
+          🚀 Proceed to Form
+        </button>
+      </center>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" id="step3">
+      <h2 class="step-title">College Application Form</h2>
+      <form method="POST" action="{% url 'college_registration' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+        <label>College Name :
+    <input type="text" name="name" id="name" placeholder="College Name" required></label>
+        <label>College Code :
+        <input type="text" name="college_code" placeholder="Govt Approved Code" required></label>
+        <label>College Email :
+            <input type="email" name="email" placeholder="College Email" required></label>
+        <label>Contact Number :
+    <input type="text" name="phone" placeholder="Phone Number" required></label>
+        <label>Address of the College :
+    <textarea name="address" placeholder="College Address" required></textarea></label>
+        <label>City :
+    <input type="text" name="city" placeholder="City" required></label>
+        <label>State :
+    <input type="text" name="state" placeholder="State" required></label>
+        <label>Pin-code :
+    <input type="text" name="pincode" placeholder="Pincode" required></label>
+        <label>Principal Name :
+    <input type="text" name="principal_name" placeholder="Principal Name" required></label>
+        <label>COLLEGE TYPE :
+    <select name="affiliation" required>
+        <option value="">Select Affiliation</option>
+        <option value="Govt">Govt</option>
+        <option value="Private">Private</option>
+        <option value="Autonomous">Autonomous</option>
+    </select></label>
+        <label>COLLEGE ESTABLISHED ON :
+    <input type="number" name="established_year" placeholder="Established Year" required></label>
+        <label>USERNAME :
+    <input type="text" name="username" id="confirm_password" placeholder="Username" required></label>
+       <label for="password">Password:</label>
+  <input type="password" id="password" name="password" placeholder="Password" required>
+
+  <!-- Wrap icon and tooltip in a container -->
+  <div class="tooltip-container">
+    <span id="password-info">&#9432;</span> <!-- ℹ️ icon -->
+    <div id="password-tooltip">
+      Password must be:
+      <ul>
+        <li>10 to 15 characters</li>
+        <li>Only A–Z or a–z</li>
+        <li>No digits or special symbols</li>
+      </ul>
+    </div>
+  </div>
+
+
+        <label>CONFIRM PASSWORD :
+        <input type="password" name="Confirm Password" placeholder="Confirm Password" required></label>
+        <label>COLLEGE LOGO :
+    <input type="file" name="logo" accept="image/*" required></label>
+          <br><br><center>
+      <button class="btn" onclick="nextStep(2)">Back</button>
+      <button class="btn" onclick="nextStep(4)">Submit Application</button></center>
+</form>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step" id="step4">
+      <div class="success">
+        <img src="{% static 'image/success.jpg' %}" alt="success message" width="200px" height="200px">
+          <button class="btn" onclick="asd()">GO TO MAIN PAGE</button>
+      </div>
+    </div>
+
+  <script>
+
+    function asd(){
+      window.location.href="{% url 'mainpage' %}";
+    }
+
+    let currentStep = 1;
+
+    function nextStep(step) {
+      document.getElementById(`step${currentStep}`).classList.remove('active');
+      document.querySelectorAll('.progressbar li')[currentStep - 1].classList.remove('active');
+      currentStep = step;
+      document.getElementById(`step${currentStep}`).classList.add('active');
+      document.querySelectorAll('.progressbar li')[currentStep - 1].classList.add('active');
+    }
+
+    function toggleProceed() {
+      const checkbox = document.getElementById("agreeCheck");
+      const proceedBtn = document.getElementById("proceedBtn");
+      proceedBtn.disabled = !checkbox.checked;
+      proceedBtn.classList.toggle("enabled", checkbox.checked);
+      proceedBtn.style.backgroundColor = checkbox.checked ? "#005f8f" : "#ccc";
+      proceedBtn.style.cursor = checkbox.checked ? "pointer" : "not-allowed";
+    }
+
+    document.querySelector("form").addEventListener("submit", function(event) {
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm_password").value;
+
+    // Regex: Only a-z and A-Z, 10 to 15 characters
+    const passwordPattern = /^[a-zA-Z]{7,15}$/;
+
+    if (!passwordPattern.test(password)) {
+        alert("Password must be 10-15 characters long and contain only letters (no numbers or special characters).");
+        event.preventDefault(); // Stop form submission
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        event.preventDefault();
+    }
+});
+
+
+const infoIcon = document.getElementById("password-info");
+  const tooltip = document.getElementById("password-tooltip");
+
+  infoIcon.addEventListener("click", function (event) {
+    // Toggle tooltip visibility
+    tooltip.style.display = (tooltip.style.display === "none" || tooltip.style.display === "") ? "block" : "none";
+    event.stopPropagation(); // Prevent click from bubbling to document
+  });
+
+  // Hide tooltip if clicked outside
+  document.addEventListener("click", function (event) {
+    if (!infoIcon.contains(event.target) && !tooltip.contains(event.target)) {
+      tooltip.style.display = "none";
+    }
+  });
+
+
+    function toggleMenu() {
+      const nav = document.getElementById("navLinks");
+      nav.classList.toggle("show");
+    }
+
+    // Sticky header effect
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      header.classList.toggle('scrolled', window.scrollY > 50);
+    });
+  </script>
+</body>
+
+</html>

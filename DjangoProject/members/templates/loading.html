@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Discover your world with - TRAVELIX</title>
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 3.5rem;
+      font-weight: bold;
+      letter-spacing: 4px;
+      margin-bottom: 20px;
+      animation: pop-in 1.2s ease-out forwards;
+    }
+
+    .loader {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .loader div {
+      width: 15px;
+      height: 15px;
+      margin: 5px;
+      background-color: #fff;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .loader div:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loader div:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+      }
+      40% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pop-in {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .tagline {
+      margin-top: 15px;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      opacity: 0.9;
+      animation: fade-in 2s ease-in forwards;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+  <script>
+    const loadingTime = 2500;
+        const redirectUrl = '{% url 'mainpage' %}';
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.querySelector('.loader').classList.add('hidden');
+                document.querySelector('.container').style.display = 'block';
+                setTimeout(function() {
+                    window.location.href = redirectUrl;
+                },2500);
+            }, loadingTime);
+        });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">TRAVELIX</div>
+    <div class="tagline">Your Smart Bus Management Partner</div>
+    <div class="loader">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+</body>
+</html>

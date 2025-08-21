@@ -1,0 +1,324 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <title>Bus Management Portal</title>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: linear-gradient(to right, #43cea2, #185a9d);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 25px;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      height: 3px;
+      width: 25px;
+      background: white;
+      margin: 4px 0;
+    }
+
+    .menu {
+      display: flex;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.7);
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+      }
+
+      nav.show {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    .intro {
+      text-align: center;
+      margin-top: 100px;
+      padding: 0 2rem;
+    }
+
+    .intro h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .intro p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .sections {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      width: 280px;
+      text-align: center;
+      transition: 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .card a {
+      text-decoration: none;
+      background: #fff;
+      color: #185a9d;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card a:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .notice-box {
+      background-color: #fff;
+      border-left: 6px solid #0077cc;
+      padding: 25px 30px;
+      max-width: 600px;
+      width: 90%;
+      border-radius: 10px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      margin: 50px auto;
+      color: #000;
+    }
+
+    .notice-title {
+      font-size: 1.5rem;
+      color: #0077cc;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .notice-title i {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 1.8rem;
+      margin-right: 10px;
+    }
+
+    .notice-message {
+      font-size: 1rem;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .login-button {
+      margin-top: 20px;
+      display: inline-block;
+      background-color: #0077cc;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+    .login-button:hover {
+      background-color: #005fa3;
+      transform: scale(1.05);
+    }
+
+    footer {
+      background: #0d3c63;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 50px;
+    }
+
+    .fab {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #0077cc;
+      color: white;
+      padding: 15px 18px;
+      border-radius: 50%;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-align: center;
+      z-index: 1000;
+      transition: background 0.3s;
+      text-decoration: none;
+    }
+
+    .fab:hover {
+      background: #005fa3;
+    }
+
+    /* Loader (optional) */
+    #loader {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+  </style>
+</head>
+<body>
+{% csrf_token %}
+  <!-- Loader (optional) -->
+  <div id="loader">
+    <img src="loader.gif" alt="Loading..." width="80">
+  </div>
+
+  <header>
+    <div class="logo">BusManage</div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <nav id="navLinks">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <div class="intro">
+    <h1>Welcome to Bus Management Portal</h1>
+    <p>Manage student bus admissions and routes easily across institutions</p>
+
+    <div class="sections">
+      <div class="card">
+        <h2><i class="fas fa-user-graduate"></i> Student</h2>
+        <p>Register & Apply for Bus</p>
+        <a href="{% url 'student_choice' %}">Get Started</a>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-university"></i> College Admin</h2>
+        <p>Register your College with us</p>
+        <a href="{% url 'terms_and_conditions' %}">Register College</a>
+      </div>
+
+      <div class="card">
+        <h2><i class="fas fa-user-shield"></i> Primary Admin</h2>
+        <p>View & Approve Colleges</p>
+        <a href="{% url 'adminstart' %}">Admin Panel</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice-box">
+    <div class="notice-title">
+      <i>🔔</i> Important Notice
+    </div>
+    <div class="notice-message">
+      This section is strictly reserved for <strong>Registered Colleges</strong>. Please proceed to log in to access the institution portal and administrative services.
+    </div>
+    <a href="{%url 'clgdashboard' %}" class="login-button">College Login</a>
+  </div>
+
+  <!-- Floating Button -->
+  <a href="#" class="fab" title="Need Help?">
+    <i class="fas fa-question"></i>
+  </a>
+
+  <footer>
+    &copy; 2025 BusManage | Designed by DIVAKAR R
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      nav.classList.toggle('show');
+    }
+
+    // Hide loader after page load
+    window.addEventListener("load", function() {
+      document.getElementById("loader").style.display = "none";
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>College Registration Form</title>
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .full-width {
+      grid-column: span 2;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    input[type="file"] {
+      padding: 5px;
+    }
+    button {
+      grid-column: span 2;
+      padding: 12px;
+      background: #007BFF;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>College Information Form</h2>
+    <form id="collegeForm" action="{% url 'college_register' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="full-width">
+        <label for="collegeName">College Name</label>
+        <input type="text" id="collegeName" name="collegeName" required>
+      </div>
+
+      <div>
+        <label for="collegeCode">College Code / ID</label>
+        <input type="text" id="collegeCode" name="collegeCode" required>
+      </div>
+
+      <div>
+        <label for="location">Location (Address, City, District, State)</label>
+        <textarea id="location" rows="3" name="location" required></textarea>
+      </div>
+
+
+      <div>
+        <label for="adminName">College Admin Name</label>
+        <input type="text" id="adminName" name="adminName" required>
+      </div>
+
+      <div>
+        <label for="adminEmail">Admin Email</label>
+        <input type="email" id="adminEmail" name="adminEmail" required>
+      </div>
+
+      <div>
+        <label for="adminPhone">Admin Phone Number</label>
+        <input type="tel" id="adminPhone" pattern="[0-9]{10}" name="adminPhone" required>
+      </div>
+
+      <div>
+        <label for="departments">Number of Departments</label>
+        <input type="number" id="departments" min="1" name="departments" required>
+      </div>
+
+      <div>
+        <label for="workingHours">Working Hours (Start - End)</label>
+        <input type="text" id="workingHours" placeholder="9:00 AM - 5:00 PM" name="workingHours" required>
+      </div>
+
+
+      <div>
+        <label for="busCert">Govt. Approved Bus Certificate</label>
+        <input type="file" id="busCert" accept=".pdf,.jpg,.png" name="busCert" required>
+      </div>
+
+      <div>
+        <label for="username">Permanent UserName :</label>
+        <input type="text" id="username" placeholder="Username :" name="username" required>
+      </div>
+
+      <div>
+        <label for="password">Password :</label>
+        <input type="password" id="password" placeholder="Password :" name="password" required>
+      </div>
+
+      <div>
+        <label for="confirmpassword">Confirm Password</label>
+        <input type="password" id="confirmpassword" placeholder="Confirm-Password :" name="confirmpassword" required>
+      </div>
+
+
+
+      <div>
+        <label>Verify</label><center>
+        <input type="checkbox" id="clickMeCheckbox">Click me</center>
+      </div>
+
+      <div class="full-width" id="licenseUploads">
+        <!-- Dynamic license upload fields will be inserted here -->
+      </div>
+
+      <div class="full-width error" id="errorMsg"></div>
+
+      <div>
+  <label>Student Payment Method (select one or more)</label><br>
+
+  <input type="checkbox" id="daily" name="paymentMethods" value="daily">
+  <label for="daily">Daily</label><br>
+
+  <input type="checkbox" id="monthly" name="paymentMethods" value="monthly">
+  <label for="monthly">Monthly</label><br>
+
+  <input type="checkbox" id="semester" name="paymentMethods" value="semester">
+  <label for="semester">Per Semester</label><br>
+
+  <input type="checkbox" id="customDays" name="paymentMethods" value="custom_days" onchange="toggleDaysInput(this)">
+  <label for="customDays">Custom Days</label><br>
+
+  <div id="customDaysInput" style="display: none; margin-top: 10px;">
+    <label for="daysCount">Enter number of days:</label>
+    <input type="number" id="daysCount" name="daysCount" min="1">
+  </div>
+</div>
+
+
+      <button type="submit" >Submit</button>
+      <button type="button" onclick="history.back();">Back</button>
+    </form>
+  </div>
+
+  <script>
+    function generateLicenseUploads() {
+      const container = document.getElementById('licenseUploads');
+      container.innerHTML = '';
+      const numDrivers = parseInt(document.getElementById('numDrivers').value);
+      for (let i = 1; i <= numDrivers; i++) {
+        const label = document.createElement('label');
+        label.textContent = `Driver ${i} License Upload`;
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.name = `license${i}`;
+        input.accept = ".jpg,.jpeg,.png,.pdf";
+        input.required = true;
+        container.appendChild(label);
+        container.appendChild(input);
+      }
+    }
+
+    document.getElementById('collegeForm').addEventListener('submit', function(e) {
+      const numDrivers = parseInt(document.getElementById('numDrivers').value);
+      const licenseFields = document.querySelectorAll('#licenseUploads input[type="file"]');
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (licenseFields.length !== numDrivers) {
+        errorMsg.textContent = `Please upload exactly ${numDrivers} license file(s).`;
+        e.preventDefault();
+        return;
+      }
+
+      errorMsg.textContent = '';
+      alert("Form submitted successfully!");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Modern Payment Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <link href="{% static 'css/payment.css' %}" rel="stylesheet">
+  <style>
+    .glass {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    .option-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-input {
+      @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-300 to-blue-100 min-h-screen flex items-center justify-center p-4">
+<div>
+  {% if messages %}
+  {% for messages in messages %}
+    <p class="text-red-500">{{ messages }}</p>
+  {% endfor %}
+  {% endif %}
+</div>
+  <div class="glass w-full max-w-4xl p-8 text-gray-800">
+    <h2 class="text-3xl font-bold mb-8 text-center">Select Payment Method</h2>
+    <form id="payment-form" class="space-y-4" method="post" action="{% url 'process_payment' %}">
+    {% csrf_token %}
+    <input type="hidden" name="student_id" value="{{ student_id }}">
+    <input type="hidden" name="route_id" value="{{ route_id }}">
+    <input type="hidden" name="stop_id" value="{{ stop_id }}">
+    <input type="hidden" name="total_fare" value="{{ total_fare }}">
+
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
+          <input type="radio" name="payment_method" value="card" class="hidden" checked>
+          <img src="{% static 'image/visa_mastercard.png' %}" alt="Card" class="w-full rounded" />
+          <span class="text-lg text-blue-500 font-semibold mt-2">Credit / Debit Card</span>
+        </label>
+
+        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
+          <input type="radio" name="payment_method" value="netbanking" class="hidden">
+          <img src="{% static 'image/netbanking.png' %}" alt="Netbanking" class="w-full rounded" />
+          <span class="text-lg text-blue-500 font-semibold mt-2">Net Banking</span>
+        </label>
+
+        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
+          <input type="radio" name="payment_method" value="upi" class="hidden">
+          <img src="{% static 'image/upi.png' %}" alt="UPI" class="w-full rounded" />
+          <span class="text-lg text-blue-500 font-semibold mt-2">UPI</span>
+        </label>
+
+        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
+          <input type="radio" name="payment_method" value="wallet" class="hidden">
+          <img src="{% static 'image/wallet.png' %}" alt="Wallet" class="w-full rounded" />
+          <span class="text-lg text-blue-500 font-semibold mt-2">Digital Wallet</span>
+        </label>
+
+        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
+          <input type="radio" name="payment_method" value="prepaid" class="hidden">
+          <img src="{% static 'image/prepaid.png' %}" alt="Prepaid" class="w-full rounded" />
+          <span class="text-lg text-blue-500 font-semibold mt-2">Prepaid Card</span>
+        </label>
+      </div>
+
+      <div id="card-section">
+        <input type="text" class="form-input" placeholder="Cardholder Name" name="card_name" />
+        <input type="text" class="form-input" placeholder="Card Number" name="card_number" />
+        <div class="grid grid-cols-2 gap-4">
+          <input type="text" class="form-input" placeholder="Expiry MM/YY" name="expiry" />
+          <input type="text" class="form-input" placeholder="CVV" name="cvv" />
+        </div>
+      </div>
+
+      <div id="upi-section" class="hidden">
+        <input type="text" class="form-input" placeholder="Enter your UPI ID" name="upi_id" />
+      </div>
+
+      <div id="netbanking-section" class="hidden">
+        <select class="form-input" name="bank">
+          <option>Select Your Bank</option>
+          <option>SBI</option>
+          <option>HDFC</option>
+          <option>ICICI</option>
+          <option>AXIS</option>
+        </select>
+      </div>
+
+      <div id="wallet-section" class="hidden">
+        <input type="text" class="form-input" placeholder="Wallet ID / Phone Number" name="wallet_id" />
+      </div>
+
+      <div id="prepaid-section" class="hidden">
+        <input type="text" class="form-input" placeholder="Prepaid Card Number" name="prepaid_card_number" />
+        <input type="password" class="form-input" placeholder="PIN" name="prepaid_pin" />
+      </div>
+<center><h1>Amount to Pay : ₹{{ total_fare }}</h1>
+</center>
+
+
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg text-lg font-semibold transition-all">
+        Pay Now
+      </button>
+
+      <p id="payment-response" class="text-green-600 text-center font-bold mt-4"></p>
+    </form>
+  </div>
+
+  <script src="{% static 'js/payment.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Success</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="{% static 'image/bus_logo.png' %}" type="image/x-icon">
+</head>
+<body class="bg-green-50 font-sans">
+
+  <div class="max-w-3xl mx-auto mt-12 p-8 bg-white rounded-xl shadow-lg border border-green-200">
+    <div class="text-center">
+      <h1 class="text-3xl font-bold text-green-700 mb-4">🎉 Payment Successful</h1>
+      <p class="text-gray-600 text-lg">Thank you, {{ student.full_name }}! Your payment has been processed.</p>
+    </div>
+
+    <div class="mt-8 space-y-4 text-gray-700">
+      <h2 class="text-xl font-semibold border-b pb-2">👤 Student Details</h2>
+      <p><strong>Full Name:</strong> {{ student.full_name }}</p>
+      <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+      <p><strong>Department:</strong> {{ student.department }}</p>
+      <p><strong>Year:</strong> {{ student.year }}</p>
+    </div>
+
+    <div class="mt-8 space-y-4 text-gray-700">
+      <h2 class="text-xl font-semibold border-b pb-2">💳 Payment Details</h2>
+      <p><strong>Payment Method:</strong> {{ payment.method|title }}</p>
+      <p><strong>Paid Amount:</strong> ₹{{ payment.total_fare }}</p>
+      <p><strong>Date:</strong> {{ payment.created_at|date:"d M Y, h:i A" }}</p>
+    </div>
+
+    <div class="mt-8 text-center">
+      <a href="{% url 'download_receipt_pdf' payment.id %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow font-medium text-lg">
+        ⬇ Download Receipt (PDF)
+      </a>
+    </div>
+
+    <div class="text-center mt-6">
+      <a href="#" class="text-green-700 underline hover:text-green-900 text-sm">← Back to Home</a>
+    </div>
+  </div>
+
+</body>
+</html>

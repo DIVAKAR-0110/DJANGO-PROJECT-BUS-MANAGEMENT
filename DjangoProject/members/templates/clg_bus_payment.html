@@ -1,0 +1,249 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>College Bus Payment Options</title>
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #6b7280;
+      --accent-color: #111827;
+      --border-color: #e5e7eb;
+      --border-radius: 0.75rem;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-secondary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 4rem 1rem 6rem;
+    }
+    main.container {
+      max-width: 480px;
+      width: 100%;
+    }
+    h1 {
+      font-weight: 700;
+      font-size: 3rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+    p.lead {
+      font-size: 1.125rem;
+      margin-bottom: 2rem;
+      color: var(--text-secondary);
+    }
+    form {
+      background: var(--bg-color);
+      padding: 2rem 2.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    fieldset {
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+    legend {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    .option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .option input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2.5px solid var(--border-color);
+      border-radius: 50%;
+      position: relative;
+      margin: 0;
+      margin-right: 1rem;
+      transition: border-color var(--transition);
+      cursor: pointer;
+    }
+    .option input[type="radio"]:checked {
+      border-color: var(--accent-color);
+    }
+    .option input[type="radio"]:checked::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 0.5rem;
+      height: 0.5rem;
+      background-color: var(--accent-color);
+      border-radius: 50%;
+    }
+    label {
+      font-size: 1rem;
+      color: var(--text-primary);
+      user-select: none;
+      cursor: pointer;
+    }
+    .days-input {
+      margin-left: 1.5rem;
+      width: 5.5rem;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      padding: 0.3rem 0.5rem;
+      border: 1.5px solid var(--border-color);
+      border-radius: 0.5rem;
+      color: var(--text-primary);
+      transition: border-color var(--transition);
+      box-sizing: border-box;
+      cursor: text;
+    }
+    .days-input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 6px rgba(17, 24, 39, 0.25);
+    }
+    .days-input:disabled {
+      background-color: #f9fafb;
+      color: var(--text-secondary);
+      cursor: not-allowed;
+    }
+    button.submit-btn {
+      margin-top: 2rem;
+      background-color: var(--accent-color);
+      color: #fff;
+      padding: 0.75rem 2rem;
+      font-size: 1.125rem;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      width: 100%;
+      transition: background-color var(--transition), transform var(--transition);
+    }
+    button.submit-btn:hover,
+    button.submit-btn:focus {
+      background-color: #22272b;
+      transform: scale(1.03);
+      outline: none;
+    }
+    /* Responsive typography */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <h1>Choose Your College Bus Payment</h1>
+    <p class="lead">Select your preferred payment option for the college bus service.</p>
+    <form id="paymentForm" aria-label="College bus payment options">
+      <fieldset>
+        <legend>Payment Options</legend>
+
+        <div class="option">
+          <input type="radio" id="daily" name="paymentOption" value="daily" required />
+          <label for="daily">Daily</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="monthly" name="paymentOption" value="monthly" />
+          <label for="monthly">Monthly</label>
+        </div>
+
+        <div class="option">
+          <input type="radio" id="semester" name="paymentOption" value="per-semester" />
+          <label for="semester">Per Semester</label>
+        </div>
+
+        <div class="option" style="align-items: center;">
+          <input type="radio" id="customDays" name="paymentOption" value="custom-days" />
+          <label for="customDays">Number of Days</label>
+          <input
+            type="number"
+            id="numDays"
+            name="numDays"
+            class="days-input"
+            min="1"
+            max="180"
+            aria-label="Number of days to use the bus"
+            placeholder="e.g. 10"
+            disabled
+            autocomplete="off"
+          />
+        </div>
+
+      </fieldset>
+      <button type="submit" class="submit-btn">Proceed</button>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('paymentForm');
+    const radios = form.elements['paymentOption'];
+    const numDaysInput = document.getElementById('numDays');
+    const customDaysRadio = document.getElementById('customDays');
+
+    function updateNumDaysInput() {
+      if (customDaysRadio.checked) {
+        numDaysInput.disabled = false;
+        numDaysInput.required = true;
+        numDaysInput.focus();
+      } else {
+        numDaysInput.disabled = true;
+        numDaysInput.required = false;
+        numDaysInput.value = '';
+      }
+    }
+
+    // Attach event listeners on radio buttons to toggle number input
+    Array.from(radios).forEach(radio => {
+      radio.addEventListener('change', updateNumDaysInput);
+    });
+
+    // Set initial state on page load
+    updateNumDaysInput();
+
+    // Clamp input value between min and max on input event
+    numDaysInput.addEventListener('input', () => {
+      const min = parseInt(numDaysInput.min, 10);
+      const max = parseInt(numDaysInput.max, 10);
+      let val = Number(numDaysInput.value);
+      if (val < min) numDaysInput.value = min;
+      else if (val > max) numDaysInput.value = max;
+    });
+
+    // Handle form submission: demo alert
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const selected = form.paymentOption.value;
+      let message = `You selected: ${selected}`;
+      if(selected === 'custom-days') {
+        message += ` (${numDaysInput.value} day${numDaysInput.value > 1 ? 's' : ''})`;
+      }
+      alert(message);
+    });
+  </script>
+</body>
+</html>
+

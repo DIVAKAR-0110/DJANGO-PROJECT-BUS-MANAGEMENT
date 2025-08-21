@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Application Submitted Successfully</title>
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    max-width: 480px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 100%;
+  }
+
+  .checkmark {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    background: #4bd37b;
+    box-shadow: 0 5px 15px rgba(75, 211, 123, 0.5);
+    position: relative;
+    animation: popIn 0.5s ease forwards;
+  }
+
+  .checkmark:after {
+    content: '';
+    position: absolute;
+    left: 38px;
+    top: 28px;
+    width: 18px;
+    height: 36px;
+    border: solid white;
+    border-width: 0 6px 6px 0;
+    transform: rotate(45deg);
+    animation: drawCheck 0.4s ease forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
+  }
+
+  @keyframes popIn {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes drawCheck {
+    0% {
+      height: 0;
+      width: 0;
+      opacity: 0;
+    }
+    60% {
+      height: 36px;
+      width: 0;
+      opacity: 1;
+    }
+    100% {
+      height: 36px;
+      width: 18px;
+      opacity: 1;
+    }
+  }
+
+  h1 {
+    font-weight: 600;
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  p.subtitle {
+    font-weight: 300;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+  }
+
+  .steps {
+    text-align: left;
+    margin-top: 1.5rem;
+  }
+
+  .step {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    position: relative;
+  }
+
+  .step::before {
+    content: attr(data-step);
+    font-weight: 600;
+    color: #764ba2;
+    background-color: #fff;
+    width: 28px;
+    height: 28px;
+    text-align: center;
+    line-height: 28px;
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+    left: -42px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 6px rgba(118, 75, 162, 0.8);
+  }
+
+  .info {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  a.contact-link {
+    color: #a7d8a7;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+
+  a.contact-link:hover {
+    color: #d8f5d8;
+  }
+
+  button.back-btn {
+    margin-top: 2rem;
+    background-color: #4bd37b;
+    border: none;
+    color: white;
+    padding: 0.75rem 1.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(75, 211, 123, 0.5);
+    transition: background-color 0.3s ease;
+  }
+
+  button.back-btn:hover,
+  button.back-btn:focus {
+    background-color: #3aaf5a;
+    outline: none;
+  }
+
+  .footer {
+    margin-top: auto;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    padding: 1rem 0 0 0;
+  }
+
+  @media (max-width: 520px) {
+    .container {
+      max-width: 90vw;
+      padding: 2rem 1.5rem;
+    }
+    .step::before {
+      left: -36px;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container" role="main" aria-live="polite">
+    <div class="checkmark" aria-hidden="true"></div>
+    <h1>Application Submitted!</h1>
+    <p class="subtitle">Thank you for submitting your application. Please wait while your college reviews and accepts your submission.</p>
+
+    <div class="steps" aria-label="Application processing steps">
+      <div class="step" data-step="1">
+        Submission Received<br />
+        Our system has received your application successfully.
+      </div>
+      <div class="step" data-step="2">
+        Verification Process<br />
+        Your college will verify your application details and documents.
+      </div>
+      <div class="step" data-step="3">
+        Acceptance Notification<br />
+        You will be notified once your college accepts your application.
+      </div>
+    </div>
+
+    <p class="info">
+      <strong>Need help or have questions?</strong><br />
+      Contact your college's admissions office or email <a href="mailto:admissions@college.edu" class="contact-link">admissions@college.edu</a>.
+    </p>
+
+    <button class="back-btn" type="button" onclick="asdf()">← Back</button>
+  </div>
+  <footer class="footer" role="contentinfo">
+    &copy; 2025 DIVAKAR R
+  </footer>
+</body>
+<script>
+  function asdf(){
+    window.location.href="{% url 'mainpage' %}";
+  }
+</script>
+</html>
+

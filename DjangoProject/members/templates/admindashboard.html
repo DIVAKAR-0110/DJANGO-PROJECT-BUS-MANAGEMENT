@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 1rem;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    .sidebar-link:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 0.5rem;
+    }
+  </style>
+</head>
+<body class="flex">
+{% csrf_token %}
+  <!-- Sidebar -->
+  <aside class="w-64 min-h-screen p-5 glass text-white bg-gradient-to-b from-blue-500 to-indigo-600 shadow-xl">
+    <h1 class="text-2xl font-bold mb-10 text-center">Admin Panel</h1>
+    <nav class="flex flex-col space-y-4">
+      <a href="#" class="sidebar-link px-4 py-2 transition">📊 Dashboard</a>
+      <a href="#" class="sidebar-link px-4 py-2 transition">👤 Users</a>
+      <a href="{% url 'college_requests' %}" class="sidebar-link px-4 py-2 transition">🏫 College Requests</a>
+      <a href="{% url 'approved_colleges' %}" class="sidebar-link px-4 py-2 transition">✅ Approved Colleges</a>
+      <a href="{% url 'rejected_colleges' %}" class="sidebar-link px-4 py-2 transition">❌ Rejected Colleges</a>
+      <a href="#" class="sidebar-link px-4 py-2 transition">🚌 Bus Routes</a>
+      <a href="#" class="sidebar-link px-4 py-2 transition">🗺️ Bus Stops</a>
+      <a href="#" class="sidebar-link px-4 py-2 transition">📄 Third-Party Students</a>
+      <a href="{% url 'mainpage' %}" onclick="history.back();" class="sidebar-link px-4 py-2 transition"><i class="fas fa-sign-out-alt"></i> Log out</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-10">
+    <header class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-800">Welcome, Admin</h2>
+      <p class="text-gray-500">Manage everything from one place.</p>
+    </header>
+
+    <!-- Dashboard Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div class="glass p-6 text-center text-white bg-gradient-to-br from-purple-500 to-indigo-600">
+        <h3 class="text-xl font-semibold">Total Users</h3>
+        <p class="text-3xl mt-2 font-bold">154</p>
+      </div>
+      <div class="glass p-6 text-center text-white bg-gradient-to-br from-pink-500 to-red-500">
+        <h3 class="text-xl font-semibold">Pending Colleges</h3>
+        <p class="text-3xl mt-2 font-bold">{{ waiting_college_count }}</p>
+      </div>
+      <div class="glass p-6 text-center text-white bg-gradient-to-br from-green-400 to-green-600">
+        <h3 class="text-xl font-semibold">Bus Routes</h3>
+        <p class="text-3xl mt-2 font-bold">{{ busroutes_count}}</p>
+      </div>
+      <div class="glass p-6 text-center text-white bg-gradient-to-br from-yellow-400 to-orange-500">
+        <h3 class="text-xl font-semibold">Students</h3>
+        <p class="text-3xl mt-2 font-bold">{{ student_count }}</p>
+      </div>
+    </section>
+
+    <!-- Section Placeholder -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div class="glass p-6">
+        <h4 class="text-xl font-bold mb-2 text-gray-800">User Management</h4>
+        <p class="text-gray-600">View, edit, or delete user records.</p>
+        <!-- You can add table or card layout here -->
+      </div>
+
+      <div class="glass p-6">
+        <h4 class="text-xl font-bold mb-2 text-gray-800">College Approvals &nbsp &nbsp == ><center><span style="font-size:35px;font-weight:10px;color:#ff0000d6;">{{ college_count }}</span></center></h4>
+        <p class="text-gray-600">Review and verify pending college applications.</p>
+      </div>
+
+      <button type="button" onclick="asdf()">Generate Pdf </button>
+
+
+      <!-- More sections -->
+    </section>
+  </main>
+
+</body>
+<script>
+   function asdf(){
+      window.location.href="#";
+    }
+</script>
+</html>

@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title style="font-family:Brush Script MT;">Discover the World with Travelix</title>
+    <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            overflow: hidden;
+        }
+        .loader, .loader span {
+            width: 10em;
+            height: 10em;
+            border: 0.25em solid white;
+            font-size: 10px;
+            border-radius: 1em;
+            position: absolute;
+            mix-blend-mode: screen;
+        }
+        .loader {
+            background-color: gold;
+            animation: rotating 2s linear infinite;
+        }
+        @keyframes rotating {
+            to {
+                transform: rotate(1turn);
+            }
+        }
+        .loader span {
+            animation: de-rotating 4s linear infinite;
+        }
+        @keyframes de-rotating {
+            from, to {
+                transform: rotate(0deg) scale(0.5);
+            }
+            50% {
+                transform: rotate(-360deg) scale(1.2);
+            }
+        }
+        .loader span:nth-child(1) {
+            top: 5em;
+            left: 5em;
+            background-color: dodgerblue;
+        }
+        .loader span:nth-child(2) {
+            top: -5em;
+            left: 5em;
+            background-color: hotpink;
+        }
+        .loader span:nth-child(3) {
+            top: 5em;
+            left: -5em;
+        }
+        .loader span:nth-child(4) {
+            top: -5em;
+            left: -5em;
+            background-color: limegreen;
+        }
+        .hidden {
+            display: none;
+        }
+        .content {
+            display:none;
+            color: white;
+            font-size: 8em;
+        }
+        .content img{
+            opacity:4px;
+            border-radius:10px;
+        }
+    </style>
+    <script>
+        const loadingTime = 4000;
+        const redirectUrl = '{% url 'clgintropage' %}';
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.querySelector('.loader').classList.add('hidden');
+                document.querySelector('.content').style.display = 'block';
+                setTimeout(function() {
+                    window.location.href = redirectUrl;
+                },2500);
+            }, loadingTime);
+        });
+    </script>
+</head>
+<body>
+{{ csrf_token }}
+    <div class="loader" id="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="content">
+        <div style="text-align:center;"><img src="{% static 'image/im.png'%}" alt="imm.jpeg" width="115px" height="125px"><h1>Travelix</h1></div>
+    </div>
+</body>
+</html>

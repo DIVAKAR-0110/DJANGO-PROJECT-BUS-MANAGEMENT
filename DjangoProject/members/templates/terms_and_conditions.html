@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terms & Conditions | BusManage</title>
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #43cea2, #185a9d);
+      color: white;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .hamburger span {
+      height: 3px;
+      width: 25px;
+      background: white;
+      margin: 4px 0;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.7);
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+      }
+
+      nav.show {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    .terms-container {
+      max-width: 900px;
+      margin: 100px auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem 2.5rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .terms-container h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .terms-container h2 {
+      font-size: 1.5rem;
+      margin-top: 1.8rem;
+      color: #ffe57f;
+    }
+
+    .terms-container p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #f2f2f2;
+    }
+
+    footer {
+      background: #0d3c63;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 50px;
+    }
+
+    .fab {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #0077cc;
+      color: white;
+      padding: 15px 18px;
+      border-radius: 50%;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-align: center;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    label {
+  font-size: 16px;
+  margin-bottom: 10px;
+  display: block;
+  font-weight: bold;
+}
+
+.checkbox-label {
+  font-size: 14px;
+  user-select: none;
+}
+
+.checkbox-label input {
+  margin-right: 10px;
+}
+
+    .fab:hover {
+      background: #005fa3;
+    }
+  </style>
+</head>
+<body>
+{% csrf_token %}
+  <header>
+    <div class="logo">BusManage</div>
+    <div class="hamburger" onclick="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <nav id="navLinks">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <div class="terms-container">
+    <h1>Terms and Conditions</h1>
+    
+    <h2>1. Introduction</h2>
+    <p>Welcome to BusManage. These terms and conditions outline the rules and regulations for the use of our portal. By accessing this website, you accept these terms and conditions. Do not continue to use the portal if you do not agree to all of the terms.</p>
+
+    <h2>2. License</h2>
+    <p>Unless otherwise stated, BusManage owns the intellectual property rights for all content on this website. You may access this for personal use, subject to restrictions set in these terms and conditions.</p>
+
+    <h2>3. User Restrictions</h2>
+    <p>Users must not:</p>
+    <ul>
+      <li>Republish or duplicate materials from this website</li>
+      <li>Sell or rent content from the site</li>
+      <li>Use this portal in any way that causes damage</li>
+    </ul>
+
+    <h2>4. College Registration</h2>
+    <p>Only verified institutions are allowed to register and manage transportation through the portal. Any falsified data or misuse will lead to account suspension.</p>
+
+    <h2>5. Data Protection</h2>
+    <p>We are committed to protecting your personal information. All uploaded documents and personal details are stored securely and used only for official purposes.</p>
+
+    <h2>6. Amendments</h2>
+    <p>We may update these terms from time to time. Continued use of the portal after any updates implies acceptance of the revised terms.</p>
+  </div>
+<center>
+  <label class="checkbox-label">
+          <input type="checkbox" id="agreeCheck" onchange="toggleProceed()" required>
+          ✅ I agree to the <a href="#">terms and conditions</a>
+        </label>
+  <button onclick="below()">Proceed to Begin </button></center>
+  <button type="button" onclick="history.back();">Back</button>
+
+  <a href="#" class="fab" title="Need Help?">
+    <i class="fas fa-question"></i>
+  </a>
+
+  <footer>
+    &copy; 2025 BusManage | Designed by DIVAKAR R
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById('navLinks');
+      nav.classList.toggle('show');
+    }
+
+    function below(){
+      window.location.href="{% url 'clgapplication' %}";
+    }
+
+    function toggleProceed() {
+      const checkbox = document.getElementById("agreeCheck");
+      const proceedBtn = document.getElementById("proceedBtn");
+      proceedBtn.disabled = !checkbox.checked;
+      proceedBtn.classList.toggle("enabled", checkbox.checked);
+      proceedBtn.style.backgroundColor = checkbox.checked ? "#005f8f" : "#ccc";
+      proceedBtn.style.cursor = checkbox.checked ? "pointer" : "not-allowed";
+    }
+  </script>
+</body>
+</html>

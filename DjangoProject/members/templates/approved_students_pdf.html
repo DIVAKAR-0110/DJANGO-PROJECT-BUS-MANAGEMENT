@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid #555;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #ddd;
+        }
+        img {
+            width: 50px;
+            height: 50px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+{% csrf_token %}
+    <h2>Approved Student Details</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Photo</th>
+                <th>Full Name</th>
+                <th>ID</th>
+                <th>DOB</th>
+                <th>Gender</th>
+                <th>Blood</th>
+                <th>Course</th>
+                <th>Dept</th>
+                <th>Year/Sem</th>
+                <th>Batch</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>College</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in approved_students %}
+            <tr>
+                <td>
+                    {% if student.student_photo %}
+                        <img src="{{ student.student_photo.url }}" alt="photo">
+                    {% else %}N/A
+                    {% endif %}
+                </td>
+                <td>{{ student.full_name }}</td>
+                <td>{{ student.student_id }}</td>
+                <td>{{ student.dob }}</td>
+                <td>{{ student.gender }}</td>
+                <td>{{ student.blood_group }}</td>
+                <td>{{ student.course_name }}</td>
+                <td>{{ student.department }}</td>
+                <td>{{ student.year_semester }}</td>
+                <td>{{ student.batch_year }}</td>
+                <td>{{ student.phone_number }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ student.college_name }}</td>
+                <td>{{ student.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+<a href="{% url 'download_students_pdf' %}" class="back-btn" style="background-color: #28a745;">
+  ⬇ Download as PDF
+</a>
+
+</body>
+</html>

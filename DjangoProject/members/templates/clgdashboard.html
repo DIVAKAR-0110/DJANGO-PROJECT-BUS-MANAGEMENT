@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        body, html {
+            height: 100%;
+            background: url('/static/image/collegelogin.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: rgb(249 214 214 / 85%);
+            padding: 40px 50px;
+            border-radius: 15px;
+            width: 350px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            text-align: center;
+            transition: box-shadow 0.3s ease;
+        }
+        .login-container:hover {
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        h2 {
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        input[type="text"], input[type="password"] {
+            padding: 12px 15px;
+            border: 1.8px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #645CFF;
+            outline: none;
+            box-shadow: 0 0 8px rgba(100, 92, 255, 0.35);
+        }
+        .forgot-password {
+            text-align: right;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+        .forgot-password a {
+            color: #645CFF;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .forgot-password a:hover {
+            color: #4e44d1;
+            text-decoration: underline;
+        }
+        button {
+            padding: 14px;
+            background-color: #645CFF;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #4e44d1;
+        }
+        .error-message {
+            color: #ff3860;
+            font-size: 14px;
+            margin-top: -10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login to Clg Account</h2>
+        <form method="POST" action="{% url 'collegeverify' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="category">Choose Your college</label>
+            <select name="category" id="category">
+                <option value="Choose">Choose</option>
+                {% for coll in colleges %}
+                <option value="{{ coll.name }}">{{ coll.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="username" placeholder="Username" required autofocus />
+            <input type="password" name="password" placeholder="Password" required />
+            <div class="forgot-password">
+                <a href="{% url 'forgot_passwords' %}">Forgot password?</a>  <!-- Link to password reset -->
+            </div>
+            {% if messages %}
+                <div class="error-message">
+                    {% for message in messages %}
+                        {{ message }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <button type="submit">Log In</button>
+        </form>
+    </div>
+</body>
+</html>

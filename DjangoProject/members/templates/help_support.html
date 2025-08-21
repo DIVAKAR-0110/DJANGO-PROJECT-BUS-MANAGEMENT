@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <title>Help & Support</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #fff;
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background-color: #fff;
+      border-bottom: 1px solid #eee;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 45px;
+      margin-right: 12px;
+    }
+
+    .logo h2 {
+      font-size: 22px;
+      color: #004080;
+    }
+
+    nav.nav-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    nav a:hover {
+      color: #007bff;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #004080;
+      margin-bottom: 30px;
+    }
+
+    .support-box {
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    footer {
+      background-color: #222;
+      color: #ccc;
+      text-align: center;
+      padding: 40px 20px 20px;
+      margin-top: 60px;
+    }
+
+    .footer-logo {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+
+    .footer-bottom {
+      font-size: 14px;
+      color: #888;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+      {% csrf_token %}
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/2555/2555125.png" alt="Bus Icon" />
+      <h2>Your College Bus Pass</h2>
+    </div>
+    <nav class="nav-links">
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'register' %}">Register</a>
+      <a href="{% url 'renew' %}">Renew</a>
+      <a href="{% url 'cancel' %}">Cancel</a>
+      <a href="{% url 'routes' %}">Routes</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h2>Help & Support</h2>
+    <div class="support-box">
+      <h3>FAQs</h3>
+      <ul>
+        <li><strong>How do I register for a bus pass?</strong> Fill out the registration form and submit your details.</li>
+        <li><strong>What is the validity of the bus pass?</strong> The bus pass is valid for 6 months from the date of registration.</li>
+        <li><strong>How do I renew my bus pass?</strong> You can renew your bus pass through the 'Renew' section of the portal.</li>
+        <li><strong>What should I do if I lose my bus pass?</strong> Report it through the 'Cancel' section and apply for a new one.</li>
+      </ul>
+    </div>
+    <div class="support-box">
+      <h3>Contact Us</h3>
+      <p>If you need further assistance, feel free to reach out to us via the following channels:</p>
+      <ul>
+        <li>Email: support@collegebus.com</li>
+        <li>Phone: +91-1234567890</li>
+        <li>Address: College Bus Office, Main Campus, City</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">Your College Name - Bus Pass Management</div>
+    <div class="footer-bottom">© 2025 Your College Name. All Rights Reserved.</div>
+  </footer>
+</body>
+</html>

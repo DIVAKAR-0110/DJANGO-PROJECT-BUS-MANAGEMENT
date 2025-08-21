@@ -1,0 +1,63 @@
+SIMPLE TCP APPLICATION
+
+socket api
+
+ HTTP SERVER  -  8
+
+SOURCE PORT - 16 BIT
+
+0-1023 -- WELL KNOWN PORT NUMBER
+>=1024
+
+
+socket()
+
+1. socket(AF_INET,SOCK_STREAM, 0 )
+
+
+
+bind() 
+2. bind ( sd , .... )
+
+
+3. Listen(sd,5)
+
+
+
+4. cd=accept ( sd , ...)
+
+5.recv( cd,
+
+5. send ( cd,
+
+6. close (cd,
+
+7.close ( sd )
+
+
+
+client:
+
+
+1.socket
+
+2.bind ( optional )     ( sd
+
+3.connect  ( sd, server. add,server.port ) 
+
+-------------------------------------
+
+bind (sd                     ( sd - socket descriptor )
+4. send  ( sd
+
+5.receive ( sd
+
+6.close ( sd
+
+7.
+
+
+
+man socket
+man ip
+

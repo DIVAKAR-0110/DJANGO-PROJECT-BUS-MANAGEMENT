@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+<title>Student Portal | Choose Your Path</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg,  #11998e 0%, #2b1892  100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  .wrapper {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 360px;
+    padding: 40px 30px;
+    text-align: center;
+  }
+
+  h1 {
+    font-weight: 700;
+    font-size: 2.6rem;
+    margin-bottom: 12px;
+    letter-spacing: 1.2px;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+
+  p {
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+    border: none;
+    border-radius: 50px;
+    padding: 16px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(21, 202, 176, 0.6);
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+    text-decoration: none;
+    display: block;
+  }
+
+  .btn:hover, .btn:focus {
+    background: linear-gradient(135deg, #08a162 0%, #0d6b48 100%);
+    box-shadow: 0 8px 26px rgba(13, 107, 72, 0.85);
+    outline: none;
+    transform: translateY(-4px);
+  }
+
+  footer {
+    margin-top: 30px;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  @media (max-width: 400px) {
+    .wrapper {
+      width: 90%;
+      padding: 30px 20px;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+    .btn {
+      font-size: 1.1rem;
+      padding: 14px 0;
+    }
+  }
+</style>
+</head>
+<body>
+{% csrf_token %}
+  <main class="wrapper" role="main" aria-label="Student choice selection">
+    <h1>Welcome to the Student Portal</h1>
+    <p>Please choose an option to proceed</p>
+    <nav class="btn-group" aria-label="Student registration options">
+      <a href="{% url 'students_login' %}" class="btn" role="button" aria-label="Already Registered Students Login">Already Registered</a>
+      <a href="{% url 'studentdetails' %}" class="btn" role="button" aria-label="New Student Registration">New Student Registration</a>
+    </nav>
+    <footer>© 2025 by R DIVAKAR </footer>
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bus Routes</title>
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-indigo-200 min-h-screen p-4 sm:p-8">
+  <div class="max-w-6xl mx-auto bg-white p-4 sm:p-8 rounded-3xl shadow-xl">
+    <h1 class="text-2xl sm:text-3xl font-bold text-indigo-800 mb-6 text-center">Available Bus Routes</h1>
+
+    {% if bus_routes %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full table-auto border border-indigo-200 rounded-xl overflow-hidden">
+        <thead class="bg-indigo-100 text-indigo-800 text-sm sm:text-base">
+          <tr>
+            <th class="py-3 px-4 text-left">Route</th>
+            <th class="py-3 px-4">Bus No</th>
+            <th class="py-3 px-4">Morning</th>
+            <th class="py-3 px-4">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for route in bus_routes %}
+          <tr class="border-t border-indigo-100 hover:bg-indigo-50 transition text-sm sm:text-base">
+            <td class="py-3 px-4 font-semibold">{{ route.route_name }}</td>
+            <td class="py-3 px-4">{{ route.bus_number }}</td>
+            <td class="py-3 px-4">
+              <strong>Morning Stops -</strong><br>
+              {{ route.morning_start }} → {{ route.morning_end }}<br>
+              ₹{{ route.morning_fare }} at {{ route.morning_time }}
+            </td>
+
+            <td class="py-3 px-4 space-y-2 sm:space-x-2 sm:space-y-0 flex flex-col sm:flex-row">
+              <a href="{% url 'route_detail' route.id student.student_id %}" class="inline-block px-3 py-1 text-white bg-indigo-500 rounded-lg hover:bg-indigo-700 text-sm text-center">View Stops</a>
+              <!-- <a href="#" class="inline-block px-3 py-1 text-white bg-green-500 rounded-lg hover:bg-green-700 text-sm text-center">Pay Now</a>
+            -->  </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+      <img src="{% static 'image/raining-bus-stop.gif' %}" alt="No Routes" class="mx-auto mb-6 w-36 h-36 sm:w-48 sm:h-48 opacity-80">
+      <h2 class="text-xl sm:text-2xl font-semibold text-indigo-700">No Routes Found</h2>
+      <p class="text-gray-500 mt-2">Currently, there are no bus routes available for your college. Please check back later.</p>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Approved Colleges</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center mb-6 text-blue-800">List of Approved Colleges</h1>
+
+        <!-- Search Form -->
+        <form method="get" action="{% url 'approved_colleges' %}" class="mb-6 max-w-xl mx-auto flex">
+            <input
+                type="text"
+                name="q"
+                placeholder="Search by college name or code..."
+                value="{{ query }}"
+                class="w-full p-3 rounded-l-md border border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+                type="submit"
+                class="bg-blue-600 text-white px-6 py-3 rounded-r-md hover:bg-blue-700"
+            >
+                Search
+            </button>
+        </form>
+
+        {% if colleges %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for clg in colleges %}
+                    <div class="bg-white shadow-xl rounded-xl overflow-hidden hover:shadow-2xl transition duration-300">
+                        {% if clg.image %}
+                            <img src="{{ clg.image.url }}" alt="College Image" class="w-full h-48 object-cover">
+                        {% else %}
+                            <img src="{% static 'default_college.jpg' %}" alt="Default Image" class="w-full h-48 object-cover">
+                        {% endif %}
+
+                        <div class="p-5">
+                            <h2 class="text-xl font-semibold text-blue-700">{{ clg.name }}</h2>
+                            <p class="text-sm text-gray-600">Code: <strong>{{ clg.code }}</strong></p>
+                            <p class="mt-2 text-gray-700"><strong>Address:</strong> {{ clg.address }}</p>
+                            <p class="text-gray-700"><strong>Admin:</strong> {{ clg.admin_name }} ({{ clg.admin_email }}, {{ clg.admin_phone }})</p>
+                            <p class="text-gray-700"><strong>Departments:</strong> {{ clg.num_departments }}</p>
+                            <p class="text-gray-700"><strong>Working Hours:</strong> {{ clg.working_hours }}</p>
+                            <p class="text-gray-700"><strong>Payment Methods:</strong>
+                                {% for method in clg.get_payment_methods %}
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{{ method }}</span>
+                                {% endfor %}
+                            </p>
+                            {% if clg.custom_days_count %}
+                                <p class="text-gray-700"><strong>Custom Days:</strong> {{ clg.custom_days_count }}</p>
+                            {% endif %}
+                            {% if clg.bus_certificate %}
+                                <a href="{{ clg.bus_certificate.url }}" target="_blank" class="text-blue-600 hover:underline mt-3 inline-block">View Bus Certificate</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center text-red-600 text-lg mt-6">No colleges found matching your search.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Requests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <link rel="stylesheet" href="{% static 'styles.css' %}"> <!-- Link to your external CSS file -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2, h5 {
+      color: #333;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+    .btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn-approve {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-reject {
+      background-color: #dc3545;
+      color: white;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  {% for coll in college %}
+    {% if coll.id == college_id %}
+      <h1>{{ coll.name }}</h1>
+      <h5>{{ coll.address }}</h5>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<h2>Pending Student Requests</h2>
+
+{% if messages %}
+  {% for message in messages %}
+    <p style="color: {% if message.tags == 'success' %}green{% elif message.tags == 'error' %}red{% endif %};">
+      {{ message }}
+    </p>
+  {% endfor %}
+{% endif %}
+
+{% if students %}
+<p>Loaded {{ students|length }} students for college ID {{ college_id }}</p>
+<div class="table-responsive">
+
+
+  <table>
+    <thead>
+      <tr>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>ID</th>
+        <th>Course</th>
+        <th>Department</th>
+        <th>Email</th>
+        <th>Year</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <td>
+          {% if student.student_photo %}
+            <img src="{{ student.student_photo.url }}" alt="Student Photo">
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>{{ student.full_name }}</td>
+        <td>{{ student.student_id }}</td>
+        <td>{{ student.course_name }}</td>
+        <td>{{ student.department }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.year_semester }}</td>
+        <td>
+          <form method="POST" action="{% url 'handle_student_request' student.id college_id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="approve">
+            <button type="submit" class="btn btn-approve">Approve</button>
+            <button type="button" class="btn btn-reject" onclick="openRejectionModal('{{ student.id }}')">Reject</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div id="rejection-modal" class="modal">
+  <div class="modal-content">
+    <h3>Reject Student</h3>
+    <form method="POST" id="rejection-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="reject">
+      <label for="rejection_reason">Reason:</label>
+      <textarea name="rejection_reason" id="rejection_reason" style="width:300px;height:250px;font-size:24px" required></textarea>
+      <div class="modal-buttons">
+        <button type="button" onclick="closeRejectionModal()">Cancel</button>
+        <button type="submit" class="btn btn-reject">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% else %}
+  <center><h2>No more requests up to date!</h2></center>
+{% endif %}
+
+<script>
+function openRejectionModal(studentId) {
+  const modal = document.getElementById("rejection-modal");
+  const form = document.getElementById("rejection-form");
+  const collegeId = "{{ college_id }}";
+  form.action = `/handle_student_request/${studentId}/${collegeId}/`;
+  modal.style.display = "flex";
+}
+function closeRejectionModal() {
+  document.getElementById("rejection-modal").style.display = "none";
+}
+</script>
+
+</body>
+</html>

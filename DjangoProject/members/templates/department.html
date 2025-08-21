@@ -1,0 +1,302 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Department Management - Bus Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<style>
+  :root {
+    --color-primary: #7c3aed; /* Saturated purple */
+    --color-primary-light: #a78bfa;
+    --color-bg: #ffffff;
+    --color-text-primary: #1f2937; /* Gray-800 */
+    --color-text-secondary: #6b7280; /* Gray-500 */
+    --color-card-bg: #f9f9fb;
+    --color-card-shadow: rgba(124, 58, 237, 0.1);
+    --radius: 12px;
+    --space: 24px;
+    --transition: 0.3s ease;
+  }
+  /* Reset and base */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+    border-bottom: 1px solid #e5e7eb;
+    z-index: 1000;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.03);
+  }
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 16px var(--space);
+  }
+  button.back-button {
+    all: unset;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color var(--transition);
+  }
+  button.back-button:hover,
+  button.back-button:focus {
+    background-color: var(--color-primary-light);
+    outline: none;
+  }
+  .material-icons.back-icon {
+    font-size: 32px;
+    color: var(--color-primary);
+    transition: transform var(--transition);
+  }
+  button.back-button:hover .back-icon {
+    transform: translateX(-6px);
+  }
+  h1.title {
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin-left: 16px;
+    color: var(--color-primary);
+    user-select: none;
+    margin:auto;
+  }
+
+  main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space) 32px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Hero section with illustration & text */
+  .hero {
+    width: 100%;
+    margin-bottom: 48px;
+    text-align: center;
+    position: relative;
+  }
+  .hero-art {
+    max-width: 600px;
+    margin: 0 auto 24px;
+    user-select: none;
+    filter: drop-shadow(0 12px 12px rgba(124, 58, 237, 0.1));
+    animation: floatUp 4s ease-in-out infinite alternate;
+  }
+  @keyframes floatUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-16px); }
+  }
+  .hero-header {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    line-height: 1.1;
+    margin-bottom: 8px;
+    animation: fadeInMoveDown 1s ease forwards;
+    opacity: 0;
+  }
+  .hero-subtext {
+    font-size: 1.15rem;
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fadeInMoveDown 1.2s ease forwards;
+    opacity: 0;
+  }
+
+  /* Cards container */
+  .cards {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1000px;
+  }
+  .card {
+    background: var(--color-card-bg);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 20px var(--color-card-shadow);
+    flex: 1 1 280px;
+    max-width: 320px;
+    padding: 28px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: box-shadow var(--transition), transform var(--transition);
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--color-primary);
+  }
+  .card:hover,
+  .card:focus-visible {
+    box-shadow: 0 15px 40px rgba(124, 58, 237, 0.35);
+    transform: translateY(-8px) scale(1.03);
+    outline: none;
+  }
+  .card-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    transition: color var(--transition);
+  }
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .card-desc {
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    flex-grow: 1;
+  }
+
+  /* Footer */
+  footer {
+    background: #f3f4f6;
+    padding: 20px 0;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    user-select: none;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  /* Animations */
+  @keyframes fadeInMoveDown {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    main {
+      padding: var(--space) 16px 80px;
+    }
+    .cards {
+      gap: 24px;
+    }
+  }
+  @media (max-width: 768px) {
+    .hero-header {
+      font-size: 2rem;
+    }
+    .cards {
+      flex-direction: column;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .card {
+      max-width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  {% for college in colleges %}
+  {% if college.id == college_id %}
+  <div class="header-container">
+      <span class="material-icons back-icon" style="cursor:pointer;" onclick="history.back();" aria-hidden="true"><title>Go Back</title>arrow_back</span>
+    <h1 class="title">Department Management</h1>
+  </div>
+</header>
+<main>
+
+  <center>
+  <h2>{{ college.name }}</h2><h4>{{ college.address }}</h4></center>
+  <section class="hero" role="banner" aria-label="Hero section with art and introduction">
+    <img
+      src="{% static 'image/department_main.png' %}"
+      alt="Artistic abstract illustration representing an advanced web developer working efficiently"
+      class="hero-art"
+      width="600" height="300"
+      loading="lazy"
+      onerror="this.style.display='none';"
+    />
+    <h2 class="hero-header">Works For You</h2>
+    <p class="hero-subtext">Manage Your Departments Effortlessly & Efficiently</p>
+  </section>
+  <section class="cards" role="main" aria-label="Department management actions">
+    <article tabindex="0" onclick="qwerty()" class="card" role="button" aria-pressed="false" aria-label="Add Departments">
+      <span class="material-icons card-icon" aria-hidden="true">add_business</span>
+      <h3 class="card-title">Add Departments<h4>And its courses</h4></h3>
+      <p class="card-desc">Create and configure new departments in your organization with ease.</p>
+    </article>
+    <article tabindex="0" onclick="asdf()" class="card" role="button" aria-pressed="false" aria-label="View Departments">
+      <span class="material-icons card-icon" aria-hidden="true">visibility</span>
+      <h3 class="card-title">View Departments<h4>And its courses</h4></h3>
+      <p class="card-desc">Browse and search through your departments to manage details efficiently.</p>
+    </article>
+    <article tabindex="0" class="card" role="button" aria-pressed="false" aria-label="Delete Departments">
+      <span class="material-icons card-icon" aria-hidden="true">delete_forever</span>
+      <h3 class="card-title">Delete Departments<h4>And its courses</h4></h3>
+      <p class="card-desc">Remove obsolete or unused departments securely and quickly.</p>
+    </article>
+  </section>
+  {% endif %}
+  {% endfor %}
+</main>
+<footer>
+  Designed by DIVAKAR R
+</footer>
+<script>
+  // Accessibility: toggle aria-pressed on cards on click or enter key
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      const pressed = card.getAttribute('aria-pressed') === 'true';
+      card.setAttribute('aria-pressed', !pressed);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+
+  function qwerty(){
+    window.location.href="{% url 'add_department' college_id %}";
+  }
+  function asdf(){
+    window.location.href="{% url 'view_departments' college_id %}";
+  }
+</script>
+</body>
+</html>
+

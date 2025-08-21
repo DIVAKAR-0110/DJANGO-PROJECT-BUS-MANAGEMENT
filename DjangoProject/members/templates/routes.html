@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Bus Route</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f6f9;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    #map {
+      height: 400px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .stop-list {
+      margin-top: 20px;
+    }
+
+    .stop-card {
+      background: #ecf0f1;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+
+    button {
+      background-color: #2c3e50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #1a252f;
+    }
+
+    @media screen and (max-width: 768px) {
+      #map {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Create Bus Route</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label>College Name</label>
+      <input type="text" name="college_name" required>
+
+      <label>Route Name</label>
+      <input type="text" name="route_name" required>
+
+      <label>Bus Number</label>
+      <input type="text" name="bus_number" required>
+
+      <label>Driver Name</label>
+      <input type="text" name="driver_name" required>
+
+      <label>Driver Contact</label>
+      <input type="text" name="driver_contact" required>
+
+      <label>Time Slot</label>
+      <select name="time_slot">
+        <option value="AM">Morning (AM)</option>
+        <option value="PM">Evening (PM)</option>
+      </select>
+
+      <label>Add Stops by Clicking on the Map</label>
+      <div id="map"></div>
+
+      <div class="stop-list" id="stopList"></div>
+
+      <input type="hidden" name="stops_json" id="stops_json">
+      <button type="submit">Create Route</button>
+    </form>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    let map = L.map('map').setView([11.0168, 76.9558], 13); // Default center
+    let polylinePoints = [];
+    let polyline = L.polyline([], {color: 'blue'}).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let stops = [];
+
+    map.on('click', function(e) {
+      let stopName = prompt("Enter Stop Name:");
+      if (!stopName) return;
+
+      let time = prompt("Enter Arrival Time (HH:MM):");
+      if (!time) return;
+
+      let fare = prompt("Enter Fare (INR):");
+      if (!fare) return;
+
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+
+      stops.push({
+        name: stopName,
+        lat: lat,
+        lng: lng,
+        time: time,
+        fare: fare
+      });
+
+      L.marker([lat, lng]).addTo(map)
+        .bindPopup(`<strong>${stopName}</strong><br>Time: ${time}<br>₹${fare}`).openPopup();
+
+      polylinePoints.push([lat, lng]);
+      polyline.setLatLngs(polylinePoints);
+
+      updateStopList();
+    });
+
+    function updateStopList() {
+      let stopListHTML = "";
+      stops.forEach((stop, index) => {
+        stopListHTML += `
+          <div class="stop-card">
+            <strong>Stop ${index + 1}</strong>: ${stop.name}<br>
+            Time: ${stop.time}<br>
+            Fare: ₹${stop.fare}
+          </div>`;
+      });
+
+      document.getElementById("stopList").innerHTML = stopListHTML;
+      document.getElementById("stops_json").value = JSON.stringify(stops);
+    }
+  </script>
+</body>
+</html>

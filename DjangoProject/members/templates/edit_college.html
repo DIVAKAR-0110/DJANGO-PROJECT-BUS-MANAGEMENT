@@ -1,0 +1,301 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="{% static 'image/bus_logo.png' %}" type="image/x-icon">
+  <title>Edit College Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #f0f4f8;
+      --container-bg: rgba(255, 255, 255, 0.9);
+      --text-color: #2c3e50;
+      --label-color: #333;
+      --input-bg: #f9f9f9;
+      --input-border: #bbb;
+      --button-bg: linear-gradient(135deg, #5e60ce, #764ba2);
+      --button-hover: linear-gradient(135deg, #4b4bec, #5e60ce);
+    }
+
+    body.dark {
+      --bg-color: #1e1e2f;
+      --container-bg: rgba(40, 44, 52, 0.95);
+      --text-color: #ffffff;
+      --label-color: #dddddd;
+      --input-bg: #2d2d3f;
+      --input-border: #555;
+      --button-bg: linear-gradient(135deg, #4a00e0, #8e2de2);
+      --button-hover: linear-gradient(135deg, #3700b3, #7b1fa2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 40px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: var(--container-bg);
+      backdrop-filter: blur(10px);
+      padding: 35px 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      max-width: 800px;
+      width: 100%;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h2 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 30px;
+      font-size: 2rem;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 16px;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--label-color);
+      grid-column: span 2;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="file"] {
+      padding: 14px;
+      border: 1.5px solid var(--input-border);
+      border-radius: 10px;
+      font-size: 1rem;
+      background: var(--input-bg);
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #5e60ce;
+      box-shadow: 0 0 8px rgba(94, 96, 206, 0.2);
+      outline: none;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+
+    .image-preview {
+      margin-top: 10px;
+      max-height: 140px;
+      border-radius: 12px;
+      object-fit: contain;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    a {
+      color: #5e60ce;
+    }
+
+    button {
+      background: var(--button-bg);
+      color: white;
+      padding: 14px 0;
+      font-size: 1rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background: var(--button-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .button-container {
+      grid-column: span 2;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      gap: 12px;
+    }
+
+    #darkToggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: transform 0.3s;
+      z-index: 999;
+    }
+
+    #darkToggle:hover {
+      transform: scale(1.1);
+    }
+
+    #progressBar {
+      height: 4px;
+      background: #5e60ce;
+      width: 0%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      transition: width 0.3s ease-in-out;
+    }
+
+    #toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1001;
+      font-weight: 600;
+      animation: fadeInOut 3s forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(-20px) translateX(-50%); }
+      10% { opacity: 1; transform: translateY(0) translateX(-50%); }
+      90% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-20px) translateX(-50%); }
+    }
+
+    @media (max-width: 768px) {
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      label,
+      .button-container {
+        grid-column: span 1 !important;
+        flex-direction: column;
+      }
+
+      .button-container {
+        gap: 10px;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="progressBar"></div>
+  <button id="darkToggle" title='Click me ' onclick="toggleDarkMode()">🌙</button>
+  <div id="toast">✅ Profile updated successfully!</div>
+
+  <div class="container">
+    <h2>Edit College Profile</h2>
+
+    <form action="{% url 'update_college' goat.id %}" method="POST" enctype="multipart/form-data" onsubmit="return handleSubmit();">
+      {% csrf_token %}
+      <!-- INPUTS START -->
+      <label for="college_name">College Name</label>
+      <input type="text" id="college_name" name="college_name" value="{{ goat.name }}" required class="full-width" />
+      <label for="college_code">College Code</label>
+      <input type="text" id="college_code" name="college_code" value="{{ goat.code }}" required class="full-width" />
+      <label for="address">Address</label>
+      <input type="text" id="address" name="address" value="{{ goat.address }}" required class="full-width" />
+      <label for="admin_name">Admin Name</label>
+      <input type="text" id="admin_name" name="admin_name" value="{{ goat.admin_name }}" required />
+      <label for="admin_email">Admin Email</label>
+      <input type="email" id="admin_email" name="admin_email" value="{{ goat.admin_email }}" required />
+      <label for="admin_phone">Admin Phone</label>
+      <input type="text" id="admin_phone" name="admin_phone" value="{{ goat.admin_phone }}" required />
+      <label for="num_departments">Number of Departments</label>
+      <input type="number" id="num_departments" name="num_departments" value="{{ goat.num_departments }}" min="0" required />
+      <label for="working_hours">Working Hours</label>
+      <input type="text" id="working_hours" name="working_hours" value="{{ goat.working_hours }}" required />
+
+      <!-- FILE UPLOADS -->
+      <label for="image">College Image (optional)</label>
+      <input type="file" id="image" name="image" accept="image/*" />
+      {% if goat.image %}
+        <img src="{{ goat.image.url }}" alt="College Image" class="image-preview full-width" />
+      {% endif %}
+
+      <label for="bus_certificate">Bus Certificate (optional)</label>
+      <input type="file" id="bus_certificate" name="bus_certificate" accept=".pdf,.jpg,.jpeg,.png" />
+      {% if goat.bus_certificate %}
+        <p class="full-width">Current file: <a href="{{ goat.bus_certificate.url }}" target="_blank">View</a></p>
+      {% endif %}
+
+      <!-- BUTTONS -->
+      <div class="button-container">
+        <button type="submit">Update Profile</button>
+        <button type="button" onclick="history.back();">Back</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+      const icon = document.getElementById("darkToggle");
+      icon.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+    }
+
+    function handleSubmit() {
+      const bar = document.getElementById("progressBar");
+      const toast = document.getElementById("toast");
+
+      // Animate progress bar
+      let width = 0;
+      bar.style.width = "0%";
+      const interval = setInterval(() => {
+        if (width >= 100) {
+          clearInterval(interval);
+          toast.style.display = "block";
+          setTimeout(() => toast.style.display = "none", 3000);
+        } else {
+          width += 10;
+          bar.style.width = width + "%";
+        }
+      }, 150);
+
+      return true; // Allow form submission
+    }
+  </script>
+</body>
+</html>

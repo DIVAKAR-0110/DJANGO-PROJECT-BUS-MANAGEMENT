@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ route.route_name }} - Details</title>
+  <link rel="icon" href="{% static 'image/bus_logo.png' %}" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-100 min-h-screen">
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center text-green-700">🚌 {{ route.route_name }} - {{ route.bus_number }}</h1>
+
+    <div class="bg-white rounded shadow p-6 mt-8">
+      <h2 class="text-xl text-green-700 font-semibold mb-4">🌄 Morning Stops</h2>
+      <table class="w-full border">
+        <thead class="bg-green-200">
+          <tr>
+            <th class="p-2 text-left">Stop Name</th>
+            <th class="p-2 text-left">Location</th>
+            <th class="p-2">Fare</th>
+            <th class="p-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for stop in stops %}
+            {% if stop.time_type == 'AM' %}
+              <tr class="border-t hover:bg-green-50">
+                <td class="p-2">{{ stop.name }}</td>
+                <td class="p-2">{{ stop.location }}</td>
+                <td class="p-2">₹{{ stop.price }}</td>
+                <td class="p-2">
+                  <button onclick="openFareModal({{ stop.id }}, '{{ stop.name }}', {{ stop.price }})" class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700">Pay</button>
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <p class="text-center mt-2 text-sm text-gray-600">Semester Working Days: <strong>{{ working_days }}</strong></p>
+    </div>
+
+    <div class="text-center mt-6">
+      <h2 class="text-xl font-semibold text-green-800">Total Fare: ₹<span id="total-fare">0</span></h2>
+    </div>
+
+    <form id="paymentForm" method="get" action="" onsubmit="return setFareValue()">
+      <input type="hidden" name="total_fare" id="totalFareInput">
+      <button type="submit" class="mt-4 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded">
+        Apply & Proceed to Payment
+      </button>
+    </form>
+
+    <div class="mt-4 text-center">
+      <a href="javascript:history.back()" class="text-green-700 hover:underline">← Back to Routes</a>
+    </div>
+  </div>
+
+  <!-- Fare Modal -->
+  <div id="fareModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded shadow-lg max-w-md w-full">
+      <h3 class="text-xl font-bold text-center text-green-700 mb-4">Choose Travel Option</h3>
+
+      <p class="text-center mb-2">Stop: <span id="selected-stop-name"></span><br>Fare: ₹<span id="base-fare-display"></span></p>
+
+      <div class="mb-4">
+        <label><input type="radio" name="fare_option" value="custom" onchange="toggleDaysInput(true)"> Custom Days</label>
+        <input type="number" id="daysInput" min="1" class="ml-2 border p-1 rounded w-20" oninput="calculateFare()" disabled>
+      </div>
+
+      <div class="mb-4">
+        <label><input type="radio" name="fare_option" value="semester" onchange="toggleDaysInput(false)"> Semester ({{ working_days }} days)</label>
+      </div>
+
+      <div class="text-center font-semibold">Calculated Fare: ₹<span id="calculatedFare">0</span></div>
+
+      <div class="mt-4 flex justify-between">
+        <button onclick="closeFareModal()" class="px-4 py-1 bg-gray-300 rounded">Cancel</button>
+        <button type="submit" form="paymentForm" class="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700">Apply</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const workingDays = {{ working_days }};
+  let selectedFare = 0;
+  let selectedStopId = null;
+
+  function openFareModal(id, name, fare) {
+    selectedFare = fare;
+    selectedStopId = id;
+    document.getElementById('selected-stop-name').innerText = name;
+    document.getElementById('base-fare-display').innerText = fare;
+    document.getElementById('fareModal').classList.remove('hidden');
+  }
+
+  function closeFareModal() {
+    document.getElementById('fareModal').classList.add('hidden');
+  }
+
+  function toggleDaysInput(enabled) {
+    const input = document.getElementById('daysInput');
+    input.disabled = !enabled;
+    if (!enabled) {
+      const total = selectedFare * workingDays;
+      document.getElementById('calculatedFare').innerText = total;
+      document.getElementById('total-fare').innerText = total;
+    }
+  }
+
+  function calculateFare() {
+    const days = parseInt(document.getElementById('daysInput').value);
+    const total = days * selectedFare;
+    document.getElementById('calculatedFare').innerText = isNaN(total) ? 0 : total;
+    document.getElementById('total-fare').innerText = isNaN(total) ? 0 : total;
+  }
+
+  function setFareValue() {
+    const totalFare = document.getElementById('total-fare').innerText.replace('₹', '');
+    document.getElementById('totalFareInput').value = totalFare;
+    const form = document.getElementById('paymentForm');
+    const routeId = {{ route.id }};
+    const studentId = '{{ student.student_id }}';
+    form.action = `/payment_page/${routeId}/${selectedStopId}/${studentId}/`;
+    return true;
+  }
+</script>
+</body>
+</html>

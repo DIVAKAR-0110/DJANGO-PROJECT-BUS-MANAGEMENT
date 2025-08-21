@@ -1,0 +1,238 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+  <title>Bus Route Management</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 40px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 20px 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .stop-section {
+      margin-bottom: 30px;
+    }
+    .stop-row {
+      display: flex;
+      flex-wrap: wrap; /* Allow wrapping for smaller screens */
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .stop-row input {
+      flex: 1 1 30%;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    /* Updated delete button style */
+    .stop-row button {
+      background-color: transparent;
+      border: none;
+      color: #e74c3c;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s, color 0.3s;
+      padding: 0;
+      user-select: none;
+    }
+    .stop-row button:hover,
+    .stop-row button:focus {
+      background-color: #e74c3c;
+      color: white;
+      outline: none;
+    }
+    .add-button {
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: background-color 0.3s;
+    }
+    .add-button:hover,
+    .add-button:focus {
+      background-color: #27ae60;
+      outline: none;
+    }
+    .submit-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      display: block;
+      margin: 30px auto 0;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    .submit-btn:hover,
+    .submit-btn:focus {
+      background-color: #2980b9;
+      outline: none;
+    }
+
+    /* Media Queries for Mobile Responsiveness */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 15px;
+      }
+      .stop-row {
+        flex-direction: column; /* Stack inputs vertically */
+        align-items: stretch;
+      }
+      .stop-row input {
+        flex: 1 1 100%;
+      }
+      .stop-row button {
+        width: 100%;
+        height: 40px;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-top: 6px;
+      }
+      .add-button,
+      .submit-btn {
+        width: 100%;
+      }
+    }
+    .info-note {
+  background: linear-gradient(135deg, #f9f9f9, #eef6fb);
+  border-left: 5px solid #3498db;
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #2c3e50;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  animation: fadeIn 1s ease-in-out;
+}
+
+.info-note .highlight {
+  color: #e67e22;
+  font-weight: 600;
+}
+
+.info-note a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.info-note a:hover {
+  text-decoration: underline;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+    .highlight-link {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2980b9;
+  text-decoration: none;
+  margin: 0 4px;
+  transition: color 0.3s ease;
+}
+
+.highlight-link:hover {
+  color: #1c5980;
+  text-decoration: underline;
+}
+
+  </style>
+</head>
+<body>
+<div class="info-note">
+  <p><strong>Note:</strong> You can only <span class="highlight">view</span> your routes here.
+  If you need to <span class="highlight">add or update</span> any routes, please go to the
+  <a href="{% url 'save_stop' route.id route.route_name %}" class="highlight-link" title="Add Bus Stops">– Add Bus Stops –</a> page.</p>
+</div>
+
+
+  <div class="container">
+    <center><h1>{{ college_name }}</h1></center>
+    <h2>Stops for {{ route.route_name }} - {{ route_id }}</h2>
+    <form action="{% url 'save_stop' route.id route.route_name %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- AM Route Stops -->
+      <div class="stop-section">
+        <h3>Morning (AM) Stops</h3>
+        <div id="am-stops">
+          {% for stop in route.stops.all %}
+  {% if stop.time_type == "AM" %}
+    <div class="stop-row">
+      <input type="hidden" name="stop_id[]" value="{{ stop.id }}" />
+      <input type="text" name="am_stop_name[]" value="{{ stop.name }}" placeholder="Stop Name" />
+      <input type="text" name="am_location[]" value="{{ stop.location }}" placeholder="Location" />
+      <input type="text" name="am_price[]" value="₹{{ stop.price }}" placeholder="Price (INR)" />
+      <button type="button" onclick="removeStop(this)">×</button>
+    </div>
+  {% endif %}
+{% endfor %}
+
+        </div>
+      </div>
+
+
+      <button type="button" onclick="history.back();">Back</button>
+      <button type="submit" class="submit-btn">Confirm</button>
+    </form>
+  </div>
+  <script>
+
+
+    function removeStop(button) {
+      button.parentElement.remove();
+    }
+    function addStop(containerId, prefix) {
+  const container = document.getElementById(containerId);
+  const div = document.createElement('div');
+  div.classList.add('stop-row');
+  div.innerHTML = `
+    <input type="hidden" name="stop_id[]" value="" />
+    <input type="text" name="\${prefix}_stop_name[]" placeholder="Stop Name" />
+    <input type="text" name="\${prefix}_location[]" placeholder="Location" />
+    <input type="number" name="\${prefix}_price[]" placeholder="Price (INR)" />
+    <button type="button" onclick="removeStop(this)">×</button>
+  `;
+  container.appendChild(div);
+}
+
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
+<title>Route Added Successfully - Bus Management</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: linear-gradient(135deg, #6DD5FA, #2980B9);
+    font-family: 'Poppins', sans-serif;
+    margin: 0; padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
+  }
+
+  .container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px 50px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 420px;
+    width: 90vw;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    animation: fadeInUp 1s ease forwards;
+  }
+
+  .icon {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 25px;
+    background: #27ae60;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: popIn 0.7s ease forwards;
+    box-shadow: 0 0 15px #27ae60aa;
+  }
+
+  .icon svg {
+    width: 48px;
+    height: 48px;
+    stroke: white;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+
+  h1 {
+    font-weight: 600;
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  p {
+    font-weight: 400;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.5;
+    color: #e0e0e0;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  button {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 15px #27ae60cc;
+    min-width: 140px;
+  }
+
+  button:hover,
+  button:focus {
+    background: #219150;
+    box-shadow: 0 8px 25px #1b7a42dd;
+    outline: none;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes popIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 400px) {
+    h1 {
+      font-size: 1.8rem;
+    }
+    p {
+      font-size: 1rem;
+      margin-bottom: 25px;
+    }
+    button {
+      width: 100%;
+      min-width: unset;
+      padding: 14px 0;
+    }
+    .buttons {
+      flex-direction: column;
+      gap: 15px;
+    }
+  }
+</style>
+</head>
+<body>
+
+{% csrf_token %}
+<h1>{{ college_id }} </h1>
+  <div class="container" role="main" aria-labelledby="successTitle" aria-describedby="successDesc">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    </div>
+    <h1>College - {{ college_name }}</h1>
+    <h1 id="successTitle">Route Added Successfully!</h1>
+    <p id="successDesc">The new bus route has been added to the system. You can now manage schedules or add more routes.</p>
+    <div class="buttons">
+      <button type="button" onclick="location.href='{% url 'view_routes' college_id %}'">View Routes</button>
+      <button type="button" onclick="history.back();">Back</button>
+    </div>
+  </div>
+</body>
+</html>
+
