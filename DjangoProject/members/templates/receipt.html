@@ -1,10 +1,79 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Receipt</title>
+    <link rel="stylesheet" href="{% static 'css/receipt.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+    <div class="receipt-wrapper">
+        <!-- College Header -->
+        <header class="college-header">
+            <img src="{% static 'image/college_logo.png' %}" alt="College Logo" class="college-logo">
+            <h1 class="college-name">Your College Name</h1>
+        </header>
 
+        <!-- Receipt Card -->
+        <section class="receipt-card">
+            <!-- Student Info -->
+            <div class="student-info">
+                <img src="{{ payment.student.student_photo.url }}" alt="Student Photo" class="student-photo">
+                <div class="student-details">
+                    <p><strong>Name:</strong> {{ payment.student.full_name }}</p>
+                    <p><strong>ID:</strong> {{ payment.student.student_id }}</p>
+                    <p><strong>Course:</strong> {{ payment.student.course_name }}</p>
+                    <p><strong>Department:</strong> {{ payment.student.department }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Payment Info -->
+            <div class="payment-info">
+                <p><strong>Route:</strong> {{ payment.ticket.route.route_name }}</p>
+                <p><strong>Stop:</strong> {{ payment.ticket.stop.name }}</p>
+                <p><strong>Payment Method:</strong> {{ payment.method|title }}</p>
+                <p><strong>Total Fare:</strong> ₹{{ payment.total_fare }}</p>
+                <p><strong>Start Date:</strong> {{ payment.ticket.start_date }}</p>
+                <p><strong>End Date:</strong> {{ payment.ticket.end_date }}</p>
+            </div>
+
+            <div class="qr-section">
+                <div id="qrcode"></div>
+                <p>Scan this QR code for verification</p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="receipt-buttons">
+                <button onclick="window.print()" class="print-btn">Print Receipt</button>
+                <a href="javascript:history.back()" class="back-btn">Back</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- GSAP Animations -->
+    <script>
+        gsap.from(".college-header", { duration: 1, y: -50, opacity: 0, ease: "bounce" });
+        gsap.from(".student-info", { duration: 1, x: -100, opacity: 0, delay: 0.5 });
+        gsap.from(".payment-info", { duration: 1, x: 100, opacity: 0, delay: 1 });
+        gsap.from(".qr-section", { duration: 1, scale: 0, opacity: 0, delay: 1.5, ease: "elastic" });
+        gsap.from(".receipt-buttons", { duration: 1, y: 50, opacity: 0, delay: 2 });
+    </script>
+
+    <!-- QR Code Generation -->
+    <script>
+        new QRCode(document.getElementById("qrcode"), {
+            text: "{{ payment.ticket.qr_data }}",
+            width: 150,
+            height: 150,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+    </script>
 </body>
 </html>

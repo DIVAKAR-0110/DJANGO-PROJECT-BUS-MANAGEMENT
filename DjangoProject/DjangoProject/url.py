@@ -26,7 +26,10 @@ urlpatterns = [
 
     path('', views.starting, name='starting'),
     path('mainpage/',views.mainpage,name='mainpage'),
-    path('registering/', views.college_register, name='college_register'),
+    path('about/',views.about,name='about'),
+    path('contactus/',views.contactus,name='contactus'),
+    path('contact_submit/',views.contact_submit,name='contact_submit'),
+    path('college_register/', views.college_register, name='college_register'),
     path('terms_and_conditions/',views.terms_and_conditions,name='terms_and_conditions'),
     path('clgapplication/', views.clgapplication, name='clgapplication'),
     path('college_requests/', views.college_requests, name='college_requests'),
@@ -92,6 +95,8 @@ urlpatterns = [
     # --------------
     #path('payment_form_page/<int:route_id>/<int:stop_id>/', views.payment_form_page, name='payment_form_page'),
     path('process_payment/', views.process_payment, name='process_payment'),
+    path('receipt/<int:payment_id>/', views.receipt_view, name='receipt_view'),
+    path('payment_error/', views.payment_error, name='payment_error'),
 
 
     path('departmentmainpage/<int:college_id>/',views.departmentmainpage,name='departmentmainpage'),

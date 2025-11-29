@@ -2,6 +2,8 @@ import os
 import random, string, json
 from datetime import timedelta, date
 import qrcode
+import re
+from django.urls import reverse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from io import BytesIO
@@ -53,7 +55,7 @@ import random
 import json
 from django.utils.decorators import method_decorator
 
-
+from .utils import send_receipt_email
 import smtplib
 from django.http import JsonResponse
 from django.core.mail import send_mail
@@ -82,6 +84,12 @@ def mainpage(request):
 
 def adminstart(request):
     return render(request,'adminstart.html')
+
+def about(request):
+    return render(request,'about.html')
+
+def contactus(request):
+    return render(request,'contactus.html')
 
 def college_register(request):
     if request.method == 'POST':
@@ -130,6 +138,30 @@ def college_register(request):
 
     return render(request, 'clgapplication.html')
 
+@csrf_exempt  # only if CSRF token is not handled in JS
+def contact_submit(request):
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        message = request.POST.get('message', '').strip()
+
+        # Validation
+        if len(name) < 3 or not re.match(r'^[A-Za-z ]+$', name):
+            return JsonResponse({'success': False, 'message': 'Please enter a valid name (letters only, min 3 characters).'})
+
+        email_regex = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_regex, email):
+            return JsonResponse({'success': False, 'message': 'Please enter a valid email address.'})
+
+        if len(message) < 10:
+            return JsonResponse({'success': False, 'message': 'Message must be at least 10 characters.'})
+
+        # Save to DB
+        ContactMessage.objects.create(name=name, email=email, message=message)
+        return JsonResponse({'success': True, 'message': 'Your message has been sent successfully!'})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request!'})
+
 def clgintropage(request):
     return render(request, 'tourmain.html')
 
@@ -148,36 +180,41 @@ def handle_college_action(request):
             college = College.objects.get(id=college_id)
 
             if action_type == 'approve':
-                # Save to ClgApproved
-                ClgApproved.objects.create(
-                    name=college.name,
-                    code=college.code,
-                    address=college.address,
-                    admin_name=college.admin_name,
-                    admin_email=college.admin_email,
-                    admin_phone=college.admin_phone,
-                    num_departments=college.num_departments,
-                    working_hours=college.working_hours,
-                    username=college.username + college.code,
-                    password=college.password,
-                    payment_methods=college.payment_methods,  # NEW
-                    custom_days_count=college.custom_days_count  # NEW
-                )
+                # Check if already exists in ClgApproved
+                if ClgApproved.objects.filter(
+                        code=college.code,
+                        admin_email=college.admin_email
+                ).exists():
+                    messages.warning(request, f"College '{college.name}' is already registered.")
+                else:
+                    ClgApproved.objects.create(
+                        name=college.name,
+                        code=college.code,
+                        address=college.address,
+                        admin_name=college.admin_name,
+                        admin_email=college.admin_email,
+                        admin_phone=college.admin_phone,
+                        num_departments=college.num_departments,
+                        working_hours=college.working_hours,
+                        username=college.username + college.code,
+                        password=college.password,
+                        payment_methods=college.payment_methods,
+                        custom_days_count=college.custom_days_count
+                    )
 
-                # Send approval email
-                send_mail(
-                    subject='College Approval Notification',
-                    message=(
-                        f"Dear {college.admin_name},\n\n"
-                        f"Congratulations! Your college '{college.name}' has been approved!\n"
-                        f"Username: {college.username}{college.code}\n"
-                        f"Password: {college.password}"
-                    ),
-                    from_email=settings.EMAIL_HOST_USER,
-                    recipient_list=[college.admin_email],
-                )
+                    send_mail(
+                        subject='College Approval Notification',
+                        message=(
+                            f"Dear {college.admin_name},\n\n"
+                            f"Congratulations! Your college '{college.name}' has been approved!\n"
+                            f"Username: {college.username}{college.code}\n"
+                            f"Password: {college.password}"
+                        ),
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[college.admin_email],
+                    )
 
-                college.delete()
+                    college.delete()
 
             elif action_type == 'reject':
                 reason = request.POST.get(f'reason_{college_id}')
@@ -212,10 +249,12 @@ def handle_college_action(request):
                     from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[college.admin_email],
                 )
-
                 college.delete()
-
     return redirect('college_requests')
+
+def payment_error(request):
+    return render(request, 'payment_error.html')
+
 
 def register_success(request):
     return render(request,"registersuccess.html")
@@ -956,66 +995,94 @@ def scan_qr_data(request):
         except Ticket.DoesNotExist:
             return JsonResponse({"status": "invalid"})
 
+
 @csrf_exempt
 def process_payment(request):
-    if request.method == "POST":
-        method = request.POST.get("payment_method")
-        student_id = request.POST.get("student_id")
-        route_id = request.POST.get("route_id")
-        stop_id = request.POST.get("stop_id")
-        total_fare = request.POST.get("total_fare")
+    try:
+        if request.method == "POST":
+            method = request.POST.get("payment_method")
+            student_id = request.POST.get("student_id")
+            route_id = request.POST.get("route_id")
+            stop_id = request.POST.get("stop_id")
+            total_fare = request.POST.get("total_fare")
 
-        if not all([method, student_id, route_id, total_fare]):
-            messages.error(request, "Missing required fields.")
-            return redirect('error')
+            if not all([method, student_id, route_id, total_fare, stop_id]):
+                messages.error(request, "Missing required fields.")
+                return redirect('payment_error')
 
-        # ✅ Fetch student and route
-        student = get_object_or_404(ApprovedStudent, student_id=student_id)
-        route = get_object_or_404(BusRoute, id=route_id)
+            # ✅ Fetch student, route, stop
+            student = get_object_or_404(ApprovedStudent, student_id=student_id)
+            route = get_object_or_404(BusRoute, id=route_id)
+            stop = get_object_or_404(Stop, id=stop_id)
 
-        # ✅ Check seat availability
-        if route.filled_seats >= route.number_of_seats:
-            messages.error(request, "No available seats on this bus route.")
-            return redirect('route_detail', route_id=route.id, student_id=student.student_id)
+            # ✅ Check seat availability
+            if route.filled_seats >= route.number_of_seats:
+                messages.error(request, "No available seats on this bus route.")
+                return redirect('route_detail', route_id=route.id, student_id=student.student_id)
 
-        # ✅ Create payment object
-        payment = Payment(
-            method=method,
-            student=student,
-            total_fare=total_fare
-        )
+            # ✅ Create Payment object
+            payment = Payment(
+                method=method,
+                student=student,
+                ticket=None,  # Will generate ticket after
+                total_fare=total_fare
+            )
 
-        # ✅ Set optional fields
-        if method == 'card':
-            payment.card_name = request.POST.get("card_name")
-            payment.card_number = request.POST.get("card_number")
-            payment.expiry = request.POST.get("expiry")
-        elif method == 'upi':
-            payment.upi_id = request.POST.get("upi_id")
-        elif method == 'netbanking':
-            payment.bank = request.POST.get("bank")
-        elif method == 'wallet':
-            payment.wallet_id = request.POST.get("wallet_id")
-        elif method == 'prepaid':
-            payment.prepaid_card_number = request.POST.get("prepaid_card_number")
-            payment.prepaid_pin = request.POST.get("prepaid_pin")
+            # Optional fields based on payment method
+            if method == 'card':
+                payment.card_name = request.POST.get("card_name")
+                payment.card_number = request.POST.get("card_number")
+                payment.expiry = request.POST.get("expiry")
+            elif method == 'upi':
+                payment.upi_id = request.POST.get("upi_id")
+            elif method == 'netbanking':
+                payment.bank = request.POST.get("bank")
+            elif method == 'wallet':
+                payment.wallet_id = request.POST.get("wallet_id")
+            elif method == 'prepaid':
+                payment.prepaid_card_number = request.POST.get("prepaid_card_number")
+                payment.prepaid_pin = request.POST.get("prepaid_pin")
 
-        payment.status='Approved'
-        # ✅ Save payment
-        payment.save()
-        send_receipt_email(payment)
+            payment.save()
 
-        # ✅ Update route seats
-        route.filled_seats += 1
-        route.available_seats = max(route.number_of_seats - route.filled_seats, 0)
-        route.save()
+            # ✅ Generate Ticket for this payment
+            from datetime import datetime, timedelta
+            ticket = Ticket.objects.create(
+                student=student,
+                route=route,
+                stop=stop,
+                total_fare=total_fare,
+                start_date=datetime.today(),
+                end_date=datetime.today() + timedelta(days=30),  # Example: 1 month validity
+                qr_data=f"{student.student_id}_{route.id}_{stop.id}_{datetime.now().timestamp()}"
+            )
+            payment.ticket = ticket
+            payment.save()
 
-        messages.success(request, f"{method.title()} payment of ₹{total_fare} recorded successfully!")
-        return redirect('receipt_view', payment_id=payment.id)
+            # ✅ Update route seats
+            route.filled_seats += 1
+            route.available_seats = max(route.number_of_seats - route.filled_seats, 0)
+            route.save()
+
+            # ✅ Optional: send receipt email
+            send_receipt_email(payment)
+            redirect_url = reverse('receipt_view', kwargs={'payment_id': payment.id})
+            return JsonResponse(
+                {"status": "success", "message": f"Payment of ₹{total_fare} successful!", "redirect_url": redirect_url})
+        else:
+            messages.error(request, "Invalid request method.")
+            return redirect('payment_error')
+
+    except Exception as e:
+        print("Payment processing error:", str(e))
+        messages.error(request, "Something went wrong while processing your payment.")
+        return redirect('payment_error')
 
 
-    messages.error(request, "Invalid request!")
-    return JsonResponse({"message": "Invalid request"}, status=400)
+# members/views.py
+def receipt_view(request, payment_id):
+    payment = Payment.objects.get(id=payment_id)
+    return render(request, 'receipt.html', {'payment': payment})
 
 
 def approved_colleges(request):

@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <link rel="stylesheet" href="{% static 'css/about.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <a href="javascript:history.back()" class="back-button">
+    <span class="arrow">&larr;</span> Back
+</a>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Our College Bus Management System</h1>
+            <p>Ensuring safe, reliable, and efficient transportation for every student.</p>
+        </div>
+        <div class="hero-image">
+            <img src="{% static 'image/bus_logo.png' %}" alt="Bus" style="width:100px;border-radius:10px;">
+        </div>
+    </section>
+<center>
+    <!-- Mission Section -->
+    <section class="mission">
+        <h2>Our Mission</h2>
+        <p>To provide a seamless, technology-driven bus service for students while enhancing convenience, safety, and real-time tracking.</p>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team">
+        <h2>Meet the Team</h2>
+        <div class="team-container">
+            <div class="team-member">
+                <img src="{% static 'image/img.png' %}" alt="Team Member">
+                <h3>Divakar R</h3>
+                <p>Project Lead</p>
+                <p>Frontend Developer</p>
+                <p>Backend Developer</p>
+            </div>
+        </div>
+    </section>
+</center>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 College Bus Management System. All Rights Reserved.</p>
+    </footer>
+
+    <script src="{% static 'js/contactus.js' %}"></script>
+</body>
+</html>

@@ -8,6 +8,20 @@
   <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
   <link href="{% static 'css/payment.css' %}" rel="stylesheet">
   <style>
+    .form-input {
+  @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400;
+}
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 0.5rem;
+  outline: none;
+}
+.form-input:focus {
+  box-shadow: 0 0 0 2px #60a5fa; /* blue-400 ring */
+}
+
     .glass {
       background: rgba(255, 255, 255, 0.15);
       border-radius: 20px;
@@ -31,8 +45,8 @@
 <body class="bg-gradient-to-br from-indigo-300 to-blue-100 min-h-screen flex items-center justify-center p-4">
 <div>
   {% if messages %}
-  {% for messages in messages %}
-    <p class="text-red-500">{{ messages }}</p>
+  {% for message in messages %}
+    <p class="text-red-500">{{ message }}</p>
   {% endfor %}
   {% endif %}
 </div>
@@ -122,4 +136,26 @@
 
   <script src="{% static 'js/payment.js' %}"></script>
 </body>
+<script>
+  document.getElementById("payNowBtn").addEventListener("click", function(){
+    let formData = new FormData(document.getElementById("paymentForm"));
+
+    fetch("{% url 'process_payment' %}", {
+        method: "POST",
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+    if(data.status === "success"){
+        window.location.href = data.redirect_url; // Redirect works now
+    } else {
+        alert(data.message);
+      }
+    });
+  });
+
+</script>
 </html>

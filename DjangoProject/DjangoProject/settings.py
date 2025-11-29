@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6r@jyvof*u=qb&w+r_$_oc$p+9f_$t2-vimi&ar0gb!r!r262j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
-ALLOWED_HOSTS = ['DIVAKAR.pythonanywhere.com']
+DEBUG = True
+#DEBUG = False
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -161,7 +161,7 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "ungaarusuvai1709@gmail.com"
-EMAIL_HOST_PASSWORD = "nmkd tkxp dkkv hmtf"  # Use environment variables for security
+EMAIL_HOST_PASSWORD = "wkle ybgl uwkk yecp"  # Use environment variables for security
 
 ASGI_APPLICATION = 'app.asgi.application'
 CHANNEL_LAYERS = {

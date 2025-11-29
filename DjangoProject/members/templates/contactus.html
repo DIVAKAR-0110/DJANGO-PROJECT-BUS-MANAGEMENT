@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="{% static 'css/contactus.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+<a href="javascript:history.back()" class="back-button">
+    <span class="arrow">&larr;</span> Back
+</a>
+
+    <section class="contact-hero">
+       <img src="{% static 'image/bus_logo.png' %}" alt="Bus" style="width:100px;height:100px;border-radius:10px;">
+        <h1>Contact Us</h1>
+        <p>We are here to help you. Reach out for any queries or support.</p>
+    </section>
+
+    <section class="contact-form-section">
+        <form id="contactForm" method="post" action="{% url 'contact_submit' %}" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="text" name="name" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Your Email" required>
+            </div>
+            <div class="form-group">
+                <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+            </div>
+            <button type="submit">Send Message</button>
+            <p id="formMessage" class="success-message"></p>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 College Bus Management System. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#contactForm').submit(function(e){
+                e.preventDefault();
+                const formData = $(this).serialize();
+
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'contact_submit' %}",
+                    data: formData,
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                    success: function(response){
+                        if(response.success){
+                            $('#formMessage').css('color', 'green').text(response.message).fadeIn().delay(3000).fadeOut();
+                            $('#contactForm')[0].reset();
+                        } else {
+                            $('#formMessage').css('color', 'red').text(response.message).fadeIn().delay(3000).fadeOut();
+                        }
+                    },
+                    error: function(){
+                        $('#formMessage').css('color', 'red').text("Oops! Something went wrong.").fadeIn().delay(3000).fadeOut();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
