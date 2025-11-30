@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Your apps
-    'busapp',      # change to your app name
     'members',
 ]
 
