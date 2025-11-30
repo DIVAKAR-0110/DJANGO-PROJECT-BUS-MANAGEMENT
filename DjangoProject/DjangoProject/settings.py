@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-6r@jyvof*u=qb&w+r_$_oc$p+9f_$t2-vimi&ar0gb!r!r262j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 #DEBUG = False
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','*']
 
 
 # Application definition
@@ -56,7 +56,7 @@ TEMPLATES = [
     },
 ]
 
-FERNET_KEY = b'n5KF8mDuRF-DnMSDRrt0szPwu002UMbkthORFx_27Bs='
+#FERNET_KEY = b'n5KF8mDuRF-DnMSDRrt0szPwu002UMbkthORFx_23Es='
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -66,7 +66,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'DjangoProject.url'
 
