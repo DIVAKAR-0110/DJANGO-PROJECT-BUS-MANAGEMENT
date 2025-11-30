@@ -6,18 +6,12 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# -----------------------------
-# SECURITY
-# -----------------------------
-SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key")  # Temporary fallback for local
+
+SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-secret-key") 
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-
-# -----------------------------
-# INSTALLED APPS
-# -----------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -25,17 +19,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Your apps
     'members',
 ]
-
-# -----------------------------
-# MIDDLEWARE
-# -----------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # REQUIRED for Render static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -46,10 +34,8 @@ MIDDLEWARE = [
 ]
 
 
-# -----------------------------
-# URLS / TEMPLATES
-# -----------------------------
-ROOT_URLCONF = 'DjangoProject.urls'
+ROOT_URLCONF = "DjangoProject.urls"
+
 
 TEMPLATES = [
     {
@@ -70,10 +56,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'DjangoProject.wsgi.application'
 
 
-# -----------------------------
-# DATABASE (DEPLOY-PHASE = SQLITE)
-# -----------------------------
-# Render deployment needs SQLite first. We will switch to PostgreSQL later.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -82,9 +64,6 @@ DATABASES = {
 }
 
 
-# -----------------------------
-# PASSWORD VALIDATION
-# -----------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -92,10 +71,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# -----------------------------
-# INTERNATIONALIZATION
-# -----------------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
@@ -103,9 +78,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-# -----------------------------
-# STATIC FILES (Render Compatible)
-# -----------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
@@ -115,26 +87,16 @@ STATICFILES_DIRS = [
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-# -----------------------------
-# MEDIA
-# -----------------------------
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-# -----------------------------
-# EMAIL SETTINGS (NO SECRETS)
-# -----------------------------
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = os.getenv("EMAIL_USER")        # ✔ secure
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")    # ✔ secure
+EMAIL_HOST_USER = os.getenv("EMAIL_USER")       
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASS")   
 
 
-# -----------------------------
-# CORS
-# -----------------------------
 CORS_ALLOW_ALL_ORIGINS = True
