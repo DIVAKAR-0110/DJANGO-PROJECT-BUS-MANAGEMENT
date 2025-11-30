@@ -1,0 +1,36 @@
+Django==5.2.5
+gunicorn==23.0.0
+
+psycopg==3.2.9
+psycopg-binary==3.2.9
+
+djangorestframework==3.16.1
+
+pillow==11.3.0
+reportlab==4.4.3
+xhtml2pdf==0.2.17
+qrcode==8.2
+
+arabic-reshaper==3.0.0
+python-bidi==0.6.6
+
+cryptography==45.0.6
+requests==2.32.5
+python-dotenv==1.1.1
+
+# PDF + Validation
+pyHanko==0.29.1
+pyhanko-certvalidator==0.27.0
+svglib==1.5.1
+tinycss2==1.4.0
+cssselect2==0.8.0
+html5lib==1.1
+
+# Utilities
+pytz==2025.2
+tzlocal==5.3.1
+PyYAML==6.0.2
+urllib3==2.5.0
+idna==3.10
+charset-normalizer==3.4.3
+certifi==2025.8.3

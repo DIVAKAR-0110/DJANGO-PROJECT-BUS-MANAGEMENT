@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: django-bus-management
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn DjangoProject.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: DjangoProject.settings
