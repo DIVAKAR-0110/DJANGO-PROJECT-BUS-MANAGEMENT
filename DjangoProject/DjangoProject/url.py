@@ -92,7 +92,6 @@ urlpatterns = [
     path('verify_qr/', views.scan_qr_data, name='scan_qr_data'),
 
 
-    # --------------
     #path('payment_form_page/<int:route_id>/<int:stop_id>/', views.payment_form_page, name='payment_form_page'),
     path('process_payment/', views.process_payment, name='process_payment'),
     path('receipt/<int:payment_id>/', views.receipt_view, name='receipt_view'),
