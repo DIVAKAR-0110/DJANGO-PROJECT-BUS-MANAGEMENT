@@ -1,11 +1,6 @@
 services:
   - type: web
-    name: django-bus-management
+    name: bus-management
     env: python
-    buildCommand: |
-      pip install -r requirements.txt
-      python manage.py collectstatic --noinput
-    startCommand: "gunicorn DjangoProject.wsgi:application"
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: DjangoProject.settings
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: gunicorn DjangoProject.wsgi:application
