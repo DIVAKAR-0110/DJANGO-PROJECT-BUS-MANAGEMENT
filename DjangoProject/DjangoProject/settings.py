@@ -34,7 +34,7 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = "DjangoProject.urls"
+ROOT_URLCONF = "DjangoProject.url"
 
 
 TEMPLATES = [
