@@ -42,7 +42,6 @@ from reportlab.platypus import Image
 import qrcode
 import io
 from django.http import FileResponse
-import login
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
