@@ -21,7 +21,6 @@ from datetime import timedelta
 from io import BytesIO
 import base64
 from django.utils import timezone
-from bottle import route
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render
