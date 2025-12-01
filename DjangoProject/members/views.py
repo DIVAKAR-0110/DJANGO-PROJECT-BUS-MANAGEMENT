@@ -48,7 +48,6 @@ from django.contrib.auth.hashers import check_password
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib import messages
 from django.urls import reverse
-from fpdf import FPDF
 import random
 import json
 from django.utils.decorators import method_decorator
