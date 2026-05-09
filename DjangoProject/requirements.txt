@@ -123,7 +123,6 @@ hpack==3.0.0
 hstspreload==2024.10.1
 html5lib==1.1
 httpcore==1.0.9
-httpx==0.28.1
 huggingface_hub==1.5.0
 hupper==1.12.1
 hyperframe==5.2.0
