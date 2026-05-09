@@ -58,7 +58,6 @@ from django.http import JsonResponse
 from django.core.mail import send_mail
 from decimal import Decimal, InvalidOperation
 from django.core.files.storage import FileSystemStorage
-from rest_framework.fields import empty
 from unicodedata import category
 from django.contrib.auth.models import User
 from xhtml2pdf import pisa
