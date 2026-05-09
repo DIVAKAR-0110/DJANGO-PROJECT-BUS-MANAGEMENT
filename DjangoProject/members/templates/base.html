@@ -4,41 +4,77 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}College Dashboard{% endblock %}</title>
+    <title>{% block title %}CIT Bus Management{% endblock %}</title>
     <link rel="icon" href="{% static 'image/bus_logo.png' %}" type="image/x-icon">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="{% static 'css/advanced_ui.css' %}" rel="stylesheet" />
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">College Admin</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
+    <nav class="navbar navbar-expand-lg nav-premium sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'starting' %}">
+                <div class="p-2 glass-card d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px;">
+                    <i class="fas fa-bus text-primary"></i>
+                </div>
+                <span class="fw-bold text-light">CIT <span class="text-primary">BUS</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-2">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Dashboard</a>
+                        <a class="nav-link nav-link-premium" href="{% url 'mainpage' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Logout</a>
+                        <a class="nav-link nav-link-premium" href="{% url 'about' %}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-premium" href="{% url 'contactus' %}">Support</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn-premium py-2" href="{% url 'adminstart' %}">
+                            <i class="fas fa-user-shield"></i> Portal
+                        </a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+    <main>
+        <div class="container mt-4 animate-fade-in">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert glass-card border-0 text-light mb-4 d-flex align-items-center gap-3" style="background: rgba(99, 102, 241, 0.1);">
+                        <i class="fas fa-info-circle text-primary"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-        {% block content %}
-        {% endblock %}
-    </div>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <footer class="mt-5 py-5 border-top border-secondary border-opacity-10">
+        <div class="container text-center">
+            <p class="text-gray mb-0">&copy; 2024 Coimbatore Institute of Technology. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

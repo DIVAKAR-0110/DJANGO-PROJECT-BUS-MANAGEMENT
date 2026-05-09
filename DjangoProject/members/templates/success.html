@@ -1,69 +1,61 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Registration Successful - Thank You!</title>
-    <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-    <style>
-        body {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            font-family: 'Poppins', sans-serif;
-            color: white;
-            text-align: center;
-            padding: 50px;
-            margin: 0;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-top: 50px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-        }
-        .btn {
-            background-color: #ffffff;
-            color: #2575fc;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn:hover {
-            background-color: #2575fc;
-            color: #ffffff;
-        }
-        img {
-            width: 150px;
-            margin-bottom: 30px;
-        }
-    </style>
-</head>
-<body>
-{% csrf_token %}
-    <div class="container">
-        <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Success">
-        <h1>Thank You for Joining Us!</h1>
-        <p>Your college has been successfully registered and Waiting for approval <small>Waiting for approval</small> on our platform.</p>
-        <p>We are excited to have you onboard. Let's work together for a bright future!</p>
-        <button type="button" onclick="history.back();">Back</button>
-    </div>
 
-<script>
-    function asd(){
-        window.location.href = "{% url 'mainpage' %}";
+{% block title %}Action Successful | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
     }
-</script>
+    
+    .success-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 60px 40px;
+        text-align: center;
+    }
 
-</body>
-</html>
+    .success-icon-wrapper {
+        width: 120px;
+        height: 120px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid var(--glass-border);
+        border-radius: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: #10b981;
+        margin: 0 auto 40px;
+        animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes scaleIn {
+        from { transform: scale(0); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 animate-fade-in">
+    <div class="glass-card success-container shadow-2xl">
+        <div class="success-icon-wrapper">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        
+        <h1 class="fw-800 text-white mb-3">Action Completed!</h1>
+        <p class="text-gray lead mb-5">Your request has been processed successfully. Thank you for using our platform.</p>
+
+        <div class="d-grid gap-3">
+            <a href="{% url 'mainpage' %}" class="btn-premium py-3 justify-content-center">
+                Return to Homepage
+            </a>
+            <button onclick="history.back()" class="btn glass-card py-3 text-gray">
+                <i class="fas fa-arrow-left me-2"></i> Go Back
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

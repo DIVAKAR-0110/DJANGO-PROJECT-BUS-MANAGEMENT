@@ -1,301 +1,223 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" href="{% static 'image/bus_logo.png' %}" type="image/x-icon">
-  <title>Edit College Profile</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg-color: #f0f4f8;
-      --container-bg: rgba(255, 255, 255, 0.9);
-      --text-color: #2c3e50;
-      --label-color: #333;
-      --input-bg: #f9f9f9;
-      --input-border: #bbb;
-      --button-bg: linear-gradient(135deg, #5e60ce, #764ba2);
-      --button-hover: linear-gradient(135deg, #4b4bec, #5e60ce);
-    }
+{% block title %}Edit Profile | {{ goat.name }}{% endblock %}
 
-    body.dark {
-      --bg-color: #1e1e2f;
-      --container-bg: rgba(40, 44, 52, 0.95);
-      --text-color: #ffffff;
-      --label-color: #dddddd;
-      --input-bg: #2d2d3f;
-      --input-border: #555;
-      --button-bg: linear-gradient(135deg, #4a00e0, #8e2de2);
-      --button-hover: linear-gradient(135deg, #3700b3, #7b1fa2);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0; padding: 0;
-      font-family: 'Poppins', sans-serif;
-    }
-
+{% block extra_css %}
+<style>
     body {
-      background: var(--bg-color);
-      color: var(--text-color);
-      min-height: 100vh;
-      padding: 40px 16px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      transition: background 0.3s, color 0.3s;
+        background-color: var(--dark);
+    }
+    
+    .edit-container {
+        max-width: 900px;
+        margin: 40px auto;
+    }
+    
+    .form-section-title {
+        border-left: 4px solid var(--primary);
+        padding-left: 15px;
+        margin-bottom: 25px;
+        margin-top: 40px;
+    }
+    
+    .form-section-title:first-child {
+        margin-top: 0;
     }
 
-    .container {
-      background: var(--container-bg);
-      backdrop-filter: blur(10px);
-      padding: 35px 40px;
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-      max-width: 800px;
-      width: 100%;
-      animation: fadeIn 0.5s ease-in-out;
+    .form-control-premium {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control-premium:focus {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        color: white;
+        outline: none;
     }
 
-    h2 {
-      text-align: center;
-      font-weight: 700;
-      margin-bottom: 30px;
-      font-size: 2rem;
+    .preview-img-container {
+        width: 100%;
+        height: 200px;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid var(--glass-border);
+        margin-top: 15px;
+        background: rgba(255, 255, 255, 0.02);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px 16px;
+    .preview-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    label {
-      font-weight: 600;
-      color: var(--label-color);
-      grid-column: span 2;
+    .file-input-wrapper {
+        position: relative;
     }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="number"],
-    input[type="file"] {
-      padding: 14px;
-      border: 1.5px solid var(--input-border);
-      border-radius: 10px;
-      font-size: 1rem;
-      background: var(--input-bg);
-      width: 100%;
-      transition: all 0.3s ease;
-    }
-
-    input:focus {
-      border-color: #5e60ce;
-      box-shadow: 0 0 8px rgba(94, 96, 206, 0.2);
-      outline: none;
-    }
-
-    .full-width {
-      grid-column: span 2;
-    }
-
-    .image-preview {
-      margin-top: 10px;
-      max-height: 140px;
-      border-radius: 12px;
-      object-fit: contain;
-      border: 1px solid #ccc;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    a {
-      color: #5e60ce;
-    }
-
-    button {
-      background: var(--button-bg);
-      color: white;
-      padding: 14px 0;
-      font-size: 1rem;
-      border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    button:hover {
-      background: var(--button-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .button-container {
-      grid-column: span 2;
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-      gap: 12px;
-    }
-
-    #darkToggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: transparent;
-      border: none;
-      font-size: 1.8rem;
-      cursor: pointer;
-      transition: transform 0.3s;
-      z-index: 999;
-    }
-
-    #darkToggle:hover {
-      transform: scale(1.1);
-    }
-
-    #progressBar {
-      height: 4px;
-      background: #5e60ce;
-      width: 0%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 1000;
-      transition: width 0.3s ease-in-out;
-    }
-
-    #toast {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #28a745;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      display: none;
-      z-index: 1001;
-      font-weight: 600;
-      animation: fadeInOut 3s forwards;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateY(-20px) translateX(-50%); }
-      10% { opacity: 1; transform: translateY(0) translateX(-50%); }
-      90% { opacity: 1; }
-      100% { opacity: 0; transform: translateY(-20px) translateX(-50%); }
-    }
-
-    @media (max-width: 768px) {
-      form {
-        grid-template-columns: 1fr;
-      }
-
-      label,
-      .button-container {
-        grid-column: span 1 !important;
-        flex-direction: column;
-      }
-
-      .button-container {
-        gap: 10px;
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
+    .file-input-wrapper input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
         opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div id="progressBar"></div>
-  <button id="darkToggle" title='Click me ' onclick="toggleDarkMode()">🌙</button>
-  <div id="toast">✅ Profile updated successfully!</div>
-
-  <div class="container">
-    <h2>Edit College Profile</h2>
-
-    <form action="{% url 'update_college' goat.id %}" method="POST" enctype="multipart/form-data" onsubmit="return handleSubmit();">
-      {% csrf_token %}
-      <!-- INPUTS START -->
-      <label for="college_name">College Name</label>
-      <input type="text" id="college_name" name="college_name" value="{{ goat.name }}" required class="full-width" />
-      <label for="college_code">College Code</label>
-      <input type="text" id="college_code" name="college_code" value="{{ goat.code }}" required class="full-width" />
-      <label for="address">Address</label>
-      <input type="text" id="address" name="address" value="{{ goat.address }}" required class="full-width" />
-      <label for="admin_name">Admin Name</label>
-      <input type="text" id="admin_name" name="admin_name" value="{{ goat.admin_name }}" required />
-      <label for="admin_email">Admin Email</label>
-      <input type="email" id="admin_email" name="admin_email" value="{{ goat.admin_email }}" required />
-      <label for="admin_phone">Admin Phone</label>
-      <input type="text" id="admin_phone" name="admin_phone" value="{{ goat.admin_phone }}" required />
-      <label for="num_departments">Number of Departments</label>
-      <input type="number" id="num_departments" name="num_departments" value="{{ goat.num_departments }}" min="0" required />
-      <label for="working_hours">Working Hours</label>
-      <input type="text" id="working_hours" name="working_hours" value="{{ goat.working_hours }}" required />
-
-      <!-- FILE UPLOADS -->
-      <label for="image">College Image (optional)</label>
-      <input type="file" id="image" name="image" accept="image/*" />
-      {% if goat.image %}
-        <img src="{{ goat.image.url }}" alt="College Image" class="image-preview full-width" />
-      {% endif %}
-
-      <label for="bus_certificate">Bus Certificate (optional)</label>
-      <input type="file" id="bus_certificate" name="bus_certificate" accept=".pdf,.jpg,.jpeg,.png" />
-      {% if goat.bus_certificate %}
-        <p class="full-width">Current file: <a href="{{ goat.bus_certificate.url }}" target="_blank">View</a></p>
-      {% endif %}
-
-      <!-- BUTTONS -->
-      <div class="button-container">
-        <button type="submit">Update Profile</button>
-        <button type="button" onclick="history.back();">Back</button>
-      </div>
-    </form>
-  </div>
-
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
-      const icon = document.getElementById("darkToggle");
-      icon.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+        cursor: pointer;
     }
 
-    function handleSubmit() {
-      const bar = document.getElementById("progressBar");
-      const toast = document.getElementById("toast");
+    .file-input-trigger {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: var(--gray);
+        transition: all 0.3s ease;
+    }
 
-      // Animate progress bar
-      let width = 0;
-      bar.style.width = "0%";
-      const interval = setInterval(() => {
-        if (width >= 100) {
-          clearInterval(interval);
-          toast.style.display = "block";
-          setTimeout(() => toast.style.display = "none", 3000);
-        } else {
-          width += 10;
-          bar.style.width = width + "%";
+    .file-input-wrapper:hover .file-input-trigger {
+        border-color: var(--primary);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-container animate-fade-in">
+    <div class="glass-card p-4 p-md-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-800 display-5 mb-2">Edit <span class="text-gradient">Profile</span></h1>
+            <p class="text-gray lead">Update institutional records and system configuration.</p>
+        </div>
+
+        <form action="{% url 'update_college' goat.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Section 1: Institutional Info -->
+            <h4 class="form-section-title fw-bold text-white">Institutional Information</h4>
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <label class="form-label text-gray small fw-bold text-uppercase">College Name</label>
+                    <input type="text" name="college_name" value="{{ goat.name }}" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">College Code</label>
+                    <input type="text" name="college_code" value="{{ goat.code }}" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Physical Address</label>
+                    <input type="text" name="address" value="{{ goat.address }}" class="form-control form-control-premium" required>
+                </div>
+            </div>
+
+            <!-- Section 2: Admin Contact -->
+            <h4 class="form-section-title fw-bold text-white">Administrative Contact</h4>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Admin Name</label>
+                    <input type="text" name="admin_name" value="{{ goat.admin_name }}" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Contact Email</label>
+                    <input type="email" name="admin_email" value="{{ goat.admin_email }}" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Phone Number</label>
+                    <input type="text" name="admin_phone" value="{{ goat.admin_phone }}" class="form-control form-control-premium" required>
+                </div>
+            </div>
+
+            <!-- Section 3: Configuration -->
+            <h4 class="form-section-title fw-bold text-white">System Configuration</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Number of Departments</label>
+                    <input type="number" name="num_departments" value="{{ goat.num_departments }}" min="0" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Operating Hours</label>
+                    <input type="text" name="working_hours" value="{{ goat.working_hours }}" class="form-control form-control-premium" required>
+                </div>
+            </div>
+
+            <!-- Section 4: Assets -->
+            <h4 class="form-section-title fw-bold text-white">Visual Assets & Documents</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Institution Logo</label>
+                    <div class="file-input-wrapper">
+                        <div class="file-input-trigger">
+                            <i class="fas fa-image"></i>
+                            <span id="logoFileName">Change institutional logo...</span>
+                        </div>
+                        <input type="file" name="image" id="logoInput" accept="image/*" onchange="updateFileName(this, 'logoFileName', 'logoPreview')">
+                    </div>
+                    <div class="preview-img-container">
+                        {% if goat.image %}
+                            <img src="{{ goat.image.url }}" id="logoPreview" class="preview-img" alt="Logo">
+                        {% else %}
+                            <div id="logoPreviewPlaceholder" class="text-gray opacity-25">No logo uploaded</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Bus Certificate</label>
+                    <div class="file-input-wrapper mb-3">
+                        <div class="file-input-trigger">
+                            <i class="fas fa-file-contract"></i>
+                            <span id="certFileName">Update certificate document...</span>
+                        </div>
+                        <input type="file" name="bus_certificate" accept=".pdf,.jpg,.jpeg,.png" onchange="updateFileName(this, 'certFileName')">
+                    </div>
+                    {% if goat.bus_certificate %}
+                        <div class="glass-card p-3 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fas fa-file-pdf text-danger fs-4"></i>
+                                <div class="small">
+                                    <div class="text-white fw-bold">Current Certificate</div>
+                                    <div class="text-gray smaller">Verified Document</div>
+                                </div>
+                            </div>
+                            <a href="{{ goat.bus_certificate.url }}" target="_blank" class="btn glass-card text-primary py-1 px-3 small">View</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-top border-secondary border-opacity-10 d-flex gap-3">
+                <button type="submit" class="btn-premium flex-grow-1 justify-content-center py-3">Update Institutional Records</button>
+                <button type="button" onclick="history.back()" class="btn glass-card border-secondary border-opacity-25 text-light px-4">Cancel Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateFileName(input, targetId, previewId) {
+        const fileName = input.files[0] ? input.files[0].name : "Choose file...";
+        document.getElementById(targetId).innerText = fileName;
+        
+        if (previewId && input.files[0]) {
+            const preview = document.getElementById(previewId);
+            const placeholder = document.getElementById(previewId + 'Placeholder');
+            if (preview) {
+                preview.src = URL.createObjectURL(input.files[0]);
+                preview.style.display = 'block';
+            }
+            if (placeholder) placeholder.style.display = 'none';
         }
-      }, 150);
-
-      return true; // Allow form submission
     }
-  </script>
-</body>
-</html>
+</script>
+{% endblock %}

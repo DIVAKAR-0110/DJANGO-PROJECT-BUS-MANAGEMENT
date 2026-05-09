@@ -1,215 +1,210 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>College Registration Form</title>
-  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
+
+{% block title %}College Registration | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
     body {
-      background: #f4f4f4;
-      margin: 0;
-      padding: 20px;
+        background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent),
+                    radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.1), transparent),
+                    var(--dark);
+        min-height: 100vh;
     }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    
+    .registration-container {
+        max-width: 900px;
+        margin: 40px auto;
     }
-    h2 {
-      text-align: center;
-      color: #333;
+    
+    .form-section-title {
+        border-left: 4px solid var(--primary);
+        padding-left: 15px;
+        margin-bottom: 25px;
+        margin-top: 40px;
     }
-    form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+    
+    .form-section-title:first-child {
+        margin-top: 0;
     }
-    .full-width {
-      grid-column: span 2;
+
+    .form-control-premium {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        color: white;
+        transition: all 0.3s ease;
     }
-    label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 5px;
+    
+    .form-control-premium:focus {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        color: white;
+        outline: none;
     }
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+
+    .payment-method-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
     }
-    input[type="file"] {
-      padding: 5px;
+
+    .payment-method-card:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: var(--primary);
     }
-    button {
-      grid-column: span 2;
-      padding: 12px;
-      background: #007BFF;
-      color: white;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+
+    .payment-method-card input:checked + label {
+        color: var(--primary-light);
     }
-    button:hover {
-      background: #0056b3;
-    }
-    .error {
-      color: red;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>College Information Form</h2>
-    <form id="collegeForm" action="{% url 'college_register' %}" method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      <div class="full-width">
-        <label for="collegeName">College Name</label>
-        <input type="text" id="collegeName" name="collegeName" required>
-      </div>
+</style>
+{% endblock %}
 
-      <div>
-        <label for="collegeCode">College Code / ID</label>
-        <input type="text" id="collegeCode" name="collegeCode" required>
-      </div>
+{% block content %}
+<div class="registration-container animate-fade-in">
+    <div class="glass-card p-4 p-md-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-800 display-5 mb-2">Institution <span class="text-gradient">Registration</span></h1>
+            <p class="text-gray lead">Partner with CIT to streamline your campus transportation.</p>
+        </div>
 
-      <div>
-        <label for="location">Location (Address, City, District, State)</label>
-        <textarea id="location" rows="3" name="location" required></textarea>
-      </div>
+        <form id="collegeForm" action="{% url 'college_register' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
+            <!-- Section 1: Basic Info -->
+            <h4 class="form-section-title fw-bold">Basic Information</h4>
+            <div class="row g-4">
+                <div class="col-12">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Full College Name</label>
+                    <input type="text" name="collegeName" class="form-control form-control-premium" placeholder="e.g. Coimbatore Institute of Technology" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">College ID / Code</label>
+                    <input type="text" name="collegeCode" class="form-control form-control-premium" placeholder="e.g. CIT001" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Working Hours</label>
+                    <input type="text" name="workingHours" class="form-control form-control-premium" placeholder="9:00 AM - 5:00 PM" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Full Address</label>
+                    <textarea name="location" rows="3" class="form-control form-control-premium" placeholder="Enter complete institutional address" required></textarea>
+                </div>
+            </div>
 
-      <div>
-        <label for="adminName">College Admin Name</label>
-        <input type="text" id="adminName" name="adminName" required>
-      </div>
+            <!-- Section 2: Admin Info -->
+            <h4 class="form-section-title fw-bold">Admin Details</h4>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Admin Name</label>
+                    <input type="text" name="adminName" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Admin Email</label>
+                    <input type="email" name="adminEmail" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Admin Phone</label>
+                    <input type="tel" name="adminPhone" pattern="[0-9]{10}" class="form-control form-control-premium" placeholder="10-digit mobile" required>
+                </div>
+            </div>
 
-      <div>
-        <label for="adminEmail">Admin Email</label>
-        <input type="email" id="adminEmail" name="adminEmail" required>
-      </div>
+            <!-- Section 3: System Config -->
+            <h4 class="form-section-title fw-bold">System Configuration</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Number of Departments</label>
+                    <input type="number" name="departments" min="1" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Bus Certificate (PDF/JPG)</label>
+                    <input type="file" name="busCert" accept=".pdf,.jpg,.png" class="form-control form-control-premium" required>
+                </div>
+            </div>
 
-      <div>
-        <label for="adminPhone">Admin Phone Number</label>
-        <input type="tel" id="adminPhone" pattern="[0-9]{10}" name="adminPhone" required>
-      </div>
+            <!-- Section 4: Authentication -->
+            <h4 class="form-section-title fw-bold">Security & Login</h4>
+            <div class="row g-4">
+                <div class="col-12">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Portal Username</label>
+                    <input type="text" name="username" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Password</label>
+                    <input type="password" name="password" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Confirm Password</label>
+                    <input type="password" name="confirmpassword" class="form-control form-control-premium" required>
+                </div>
+            </div>
 
-      <div>
-        <label for="departments">Number of Departments</label>
-        <input type="number" id="departments" min="1" name="departments" required>
-      </div>
+            <!-- Section 5: Payment Methods -->
+            <h4 class="form-section-title fw-bold">Supported Payment Cycles</h4>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="payment-method-card text-center">
+                        <input type="checkbox" id="daily" name="paymentMethods" value="daily" class="form-check-input d-none">
+                        <label for="daily" class="d-block cursor-pointer"><i class="fas fa-calendar-day mb-2 d-block"></i> Daily</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="payment-method-card text-center">
+                        <input type="checkbox" id="monthly" name="paymentMethods" value="monthly" class="form-check-input d-none">
+                        <label for="monthly" class="d-block cursor-pointer"><i class="fas fa-calendar-alt mb-2 d-block"></i> Monthly</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="payment-method-card text-center">
+                        <input type="checkbox" id="semester" name="paymentMethods" value="semester" class="form-check-input d-none">
+                        <label for="semester" class="d-block cursor-pointer"><i class="fas fa-graduation-cap mb-2 d-block"></i> Semester</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="payment-method-card text-center" onclick="document.getElementById('customDays').click()">
+                        <input type="checkbox" id="customDays" name="paymentMethods" value="custom_days" onchange="toggleDaysInput(this)" class="form-check-input d-none">
+                        <label for="customDays" class="d-block cursor-pointer"><i class="fas fa-tools mb-2 d-block"></i> Custom</label>
+                    </div>
+                </div>
+            </div>
 
-      <div>
-        <label for="workingHours">Working Hours (Start - End)</label>
-        <input type="text" id="workingHours" placeholder="9:00 AM - 5:00 PM" name="workingHours" required>
-      </div>
+            <div id="customDaysInput" class="mt-3 animate-fade-in" style="display: none;">
+                <label class="form-label text-gray small fw-bold text-uppercase">Number of Days</label>
+                <input type="number" name="daysCount" min="1" class="form-control form-control-premium" placeholder="e.g. 90">
+            </div>
 
-
-      <div>
-        <label for="busCert">Govt. Approved Bus Certificate</label>
-        <input type="file" id="busCert" accept=".pdf,.jpg,.png" name="busCert" required>
-      </div>
-
-      <div>
-        <label for="username">Permanent UserName :</label>
-        <input type="text" id="username" placeholder="Username :" name="username" required>
-      </div>
-
-      <div>
-        <label for="password">Password :</label>
-        <input type="password" id="password" placeholder="Password :" name="password" required>
-      </div>
-
-      <div>
-        <label for="confirmpassword">Confirm Password</label>
-        <input type="password" id="confirmpassword" placeholder="Confirm-Password :" name="confirmpassword" required>
-      </div>
-
-
-
-      <div>
-        <label>Verify</label><center>
-        <input type="checkbox" id="clickMeCheckbox">Click me</center>
-      </div>
-
-      <div class="full-width" id="licenseUploads">
-        <!-- Dynamic license upload fields will be inserted here -->
-      </div>
-
-      <div class="full-width error" id="errorMsg"></div>
-
-      <div>
-  <label>Student Payment Method (select one or more)</label><br>
-
-  <input type="checkbox" id="daily" name="paymentMethods" value="daily">
-  <label for="daily">Daily</label><br>
-
-  <input type="checkbox" id="monthly" name="paymentMethods" value="monthly">
-  <label for="monthly">Monthly</label><br>
-
-  <input type="checkbox" id="semester" name="paymentMethods" value="semester">
-  <label for="semester">Per Semester</label><br>
-
-  <input type="checkbox" id="customDays" name="paymentMethods" value="custom_days" onchange="toggleDaysInput(this)">
-  <label for="customDays">Custom Days</label><br>
-
-  <div id="customDaysInput" style="display: none; margin-top: 10px;">
-    <label for="daysCount">Enter number of days:</label>
-    <input type="number" id="daysCount" name="daysCount" min="1">
-  </div>
+            <div class="mt-5 pt-4 border-top border-secondary border-opacity-10 d-flex gap-3">
+                <button type="submit" class="btn-premium flex-grow-1 justify-content-center py-3">Submit Registration</button>
+                <button type="button" onclick="history.back()" class="btn glass-card border-secondary border-opacity-25 text-light px-4">Cancel</button>
+            </div>
+        </form>
+    </div>
 </div>
+{% endblock %}
 
-
-      <button type="submit" >Submit</button>
-      <button type="button" onclick="history.back();">Back</button>
-    </form>
-  </div>
-
-  <script>
-    function generateLicenseUploads() {
-      const container = document.getElementById('licenseUploads');
-      container.innerHTML = '';
-      const numDrivers = parseInt(document.getElementById('numDrivers').value);
-      for (let i = 1; i <= numDrivers; i++) {
-        const label = document.createElement('label');
-        label.textContent = `Driver ${i} License Upload`;
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.name = `license${i}`;
-        input.accept = ".jpg,.jpeg,.png,.pdf";
-        input.required = true;
-        container.appendChild(label);
-        container.appendChild(input);
-      }
+{% block extra_js %}
+<script>
+    function toggleDaysInput(checkbox) {
+        const inputDiv = document.getElementById('customDaysInput');
+        inputDiv.style.display = checkbox.checked ? 'block' : 'none';
     }
 
-    document.getElementById('collegeForm').addEventListener('submit', function(e) {
-      const numDrivers = parseInt(document.getElementById('numDrivers').value);
-      const licenseFields = document.querySelectorAll('#licenseUploads input[type="file"]');
-      const errorMsg = document.getElementById('errorMsg');
-
-      if (licenseFields.length !== numDrivers) {
-        errorMsg.textContent = `Please upload exactly ${numDrivers} license file(s).`;
-        e.preventDefault();
-        return;
-      }
-
-      errorMsg.textContent = '';
-      alert("Form submitted successfully!");
+    // Toggle visual state of payment method cards
+    document.querySelectorAll('.payment-method-card input').forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.checked) {
+                this.parentElement.style.borderColor = 'var(--primary)';
+                this.parentElement.style.background = 'rgba(99, 102, 241, 0.05)';
+            } else {
+                this.parentElement.style.borderColor = 'var(--glass-border)';
+                this.parentElement.style.background = 'rgba(255, 255, 255, 0.03)';
+            }
+        });
     });
-  </script>
-</body>
-</html>
+</script>
+{% endblock %}

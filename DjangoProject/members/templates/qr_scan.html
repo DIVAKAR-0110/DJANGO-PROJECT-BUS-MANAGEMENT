@@ -1,44 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>QR Scanner</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-</head>
-<body class="bg-gray-100 min-h-screen p-4">
-  <div class="max-w-md mx-auto bg-white rounded shadow p-6 text-center">
-    <h1 class="text-2xl font-bold mb-4">📷 Scan Ticket QR Code</h1>
-    <div id="qr-reader" style="width: 100%;"></div>
-    <div id="result" class="mt-4 text-lg text-green-700 font-semibold"></div>
-  </div>
+{% extends 'base.html' %}
+{% load static %}
 
-  <script>
-    function onScanSuccess(decodedText) {
-      fetch('/verify_qr/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: `qr_data=${encodeURIComponent(decodedText)}`
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'valid') {
-          document.getElementById('result').innerText =
-            `✔️ Valid Ticket for ${data.student}, ${data.department}\nRoute: ${data.route}\nValid Till: ${data.valid_till}`;
-        } else {
-          document.getElementById('result').innerText = '❌ Invalid QR Code';
-        }
-      });
+{% block title %}QR Scanner | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
+    }
+    
+    .scanner-container {
+        max-width: 500px;
+        margin: 50px auto;
+        overflow: hidden;
     }
 
-    new Html5Qrcode("qr-reader").start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: 250 },
-      onScanSuccess
-    );
-  </script>
-</body>
-</html>
+    #qr-reader {
+        border: none !important;
+        border-radius: 20px;
+        overflow: hidden;
+        background: black;
+    }
+
+    #qr-reader__dashboard {
+        padding: 20px !important;
+        background: var(--glass) !important;
+        border-top: 1px solid var(--glass-border) !important;
+    }
+
+    #qr-reader__status_span {
+        color: var(--primary-light) !important;
+        font-weight: 700 !important;
+    }
+
+    .scan-overlay {
+        position: relative;
+    }
+
+    .scan-box-decoration {
+        position: absolute;
+        inset: 40px;
+        border: 2px solid var(--primary);
+        border-radius: 20px;
+        pointer-events: none;
+        z-index: 10;
+        box-shadow: 0 0 0 1000px rgba(0,0,0,0.5);
+    }
+
+    #result-card {
+        display: none;
+        margin-top: 30px;
+        animation: slideUp 0.5s ease-out;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 animate-fade-in">
+    <div class="glass-card scanner-container p-4">
+        <div class="text-center mb-4">
+            <h3 class="fw-800 text-white mb-2">Ticket Verification</h3>
+            <p class="text-gray small">Align the QR code within the frame to verify</p>
+        </div>
+
+        <div class="scan-overlay">
+            <div id="qr-reader"></div>
+            <div class="scan-box-decoration"></div>
+        </div>
+
+        <div id="result-card" class="glass-card p-4 border-primary border-opacity-20 mt-4">
+            <div class="d-flex align-items-center gap-3">
+                <div id="status-icon" class="h2 mb-0"></div>
+                <div class="text-start">
+                    <div id="status-text" class="fw-800 small text-uppercase ls-1"></div>
+                    <div id="status-details" class="text-gray smaller"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <button onclick="location.reload()" class="btn glass-card text-gray py-2 px-4">
+                <i class="fas fa-sync-alt me-2"></i> Reset Scanner
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+    function onScanSuccess(decodedText) {
+        const resultCard = document.getElementById('result-card');
+        const statusIcon = document.getElementById('status-icon');
+        const statusText = document.getElementById('status-text');
+        const statusDetails = document.getElementById('status-details');
+
+        fetch('/verify_qr/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `qr_data=${encodeURIComponent(decodedText)}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            resultCard.style.display = 'block';
+            if (data.status === 'valid') {
+                statusIcon.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+                statusText.innerText = 'Access Granted';
+                statusText.className = 'fw-800 small text-uppercase ls-1 text-success';
+                statusDetails.innerText = `${data.student} | ${data.route}\nExpires: ${data.valid_till}`;
+            } else {
+                statusIcon.innerHTML = '<i class="fas fa-times-circle text-danger"></i>';
+                statusText.innerText = 'Access Denied';
+                statusText.className = 'fw-800 small text-uppercase ls-1 text-danger';
+                statusDetails.innerText = 'This ticket is invalid or has expired.';
+            }
+        });
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+</script>
+{% endblock %}

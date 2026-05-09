@@ -196,7 +196,7 @@ class Department(models.Model):
     number_of_student_in_this_department = models.IntegerField()
     department_head = models.CharField(max_length=255)
     department_email = models.EmailField(blank=True, null=True)
-    department_code=models.CharField(default='Not updated !')
+    department_code=models.CharField(default='Not updated !',max_length=20)
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     department_logo = models.ImageField(upload_to='department_logos/', blank=True, null=True)
     established_year = models.PositiveIntegerField(blank=True, null=True)
@@ -242,6 +242,12 @@ class Student(models.Model):
         ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-')
     ]
 
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected')
+    ]
+
     full_name = models.CharField(max_length=100)
     student_id = models.CharField(max_length=20, unique=True)
     dob = models.DateField()
@@ -255,57 +261,22 @@ class Student(models.Model):
     password = models.CharField(max_length=100, default='default_password')
     phone_number = models.CharField(max_length=20)
     email = models.EmailField(unique=True)
-    college = models.ForeignKey(ClgApproved, on_delete=models.CASCADE, null=True,blank=True,related_name='register_students')
-    status = models.CharField(
-        max_length=10,
-        choices=[('Pending', 'Pending'), ('Approved', 'Approved'), ('Rejected', 'Rejected')],
-        default='Pending'
-    )
-
-    def __str__(self):
-        return self.full_name
-
-
-class ApprovedStudent(models.Model):
-    full_name = models.CharField(max_length=100)
-    student_id = models.CharField(max_length=20)
-    dob = models.DateField()
-    gender = models.CharField(max_length=10)
-    blood_group = models.CharField(max_length=3)
-    student_photo = models.ImageField(upload_to='approved_students/', blank=True, null=True)
-    course_name = models.CharField(max_length=100)
+    college = models.ForeignKey(ClgApproved, on_delete=models.CASCADE, null=True, blank=True, related_name='students')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    
+    # Fields from ApprovedStudent
     assigned_route = models.ForeignKey(BusRoute, on_delete=models.SET_NULL, null=True, blank=True)
     assigned_stop = models.ForeignKey(Stop, on_delete=models.SET_NULL, null=True, blank=True)
-    department = models.CharField(max_length=100)
-    year_semester = models.CharField(max_length=50)
-    batch_year = models.CharField(max_length=20)
-    password = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    email = models.EmailField(unique=True)
-    college = models.CharField(max_length=100,null=True)
-    status = models.CharField(max_length=10, default='Denied')
+    
+    # Fields from RejectedStudent
+    rejection_reason = models.TextField(blank=True, null=True)
 
-class RejectedStudent(models.Model):
-    full_name = models.CharField(max_length=100)
-    student_id = models.CharField(max_length=20, unique=True)
-    dob = models.DateField()
-    gender = models.CharField(max_length=10)
-    blood_group = models.CharField(max_length=3)
-    student_photo = models.ImageField(upload_to='rejected_students/', blank=True, null=True)
-    course_name = models.CharField(max_length=100)
-    department = models.CharField(max_length=100)
-    year_semester = models.CharField(max_length=50)
-    batch_year = models.CharField(max_length=20)
-    password = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=20)
-    email = models.EmailField(unique=True)
-    college = models.CharField(max_length=100,null=True)
-    status = models.CharField(max_length=10, default='Rejected')
-    rejection_reason = models.TextField()
+    def __str__(self):
+        return f"{self.full_name} ({self.status})"
 
 
 class Ticket(models.Model):
-    student = models.ForeignKey(ApprovedStudent, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     route = models.ForeignKey(BusRoute, on_delete=models.CASCADE)
     stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     total_fare = models.DecimalField(max_digits=8, decimal_places=2)
@@ -334,7 +305,7 @@ class Payment(models.Model):
     prepaid_card_number = models.CharField(max_length=16, blank=True, null=True)
     prepaid_pin = models.CharField(max_length=10, blank=True, null=True)
 
-    student = models.ForeignKey(ApprovedStudent, on_delete=models.CASCADE, null=True, blank=True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, blank=True)
     ticket = models.OneToOneField(Ticket, on_delete=models.SET_NULL, null=True, blank=True)
     total_fare = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 

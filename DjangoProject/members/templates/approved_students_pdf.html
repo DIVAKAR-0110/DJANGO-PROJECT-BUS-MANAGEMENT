@@ -1,83 +1,143 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-<head>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-        th, td {
-            border: 1px solid #555;
-            padding: 6px;
-            text-align: center;
-        }
-        th {
-            background-color: #ddd;
-        }
-        img {
-            width: 50px;
-            height: 50px;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-{% csrf_token %}
-    <h2>Approved Student Details</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Photo</th>
-                <th>Full Name</th>
-                <th>ID</th>
-                <th>DOB</th>
-                <th>Gender</th>
-                <th>Blood</th>
-                <th>Course</th>
-                <th>Dept</th>
-                <th>Year/Sem</th>
-                <th>Batch</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>College</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for student in approved_students %}
-            <tr>
-                <td>
-                    {% if student.student_photo %}
-                        <img src="{{ student.student_photo.url }}" alt="photo">
-                    {% else %}N/A
-                    {% endif %}
-                </td>
-                <td>{{ student.full_name }}</td>
-                <td>{{ student.student_id }}</td>
-                <td>{{ student.dob }}</td>
-                <td>{{ student.gender }}</td>
-                <td>{{ student.blood_group }}</td>
-                <td>{{ student.course_name }}</td>
-                <td>{{ student.department }}</td>
-                <td>{{ student.year_semester }}</td>
-                <td>{{ student.batch_year }}</td>
-                <td>{{ student.phone_number }}</td>
-                <td>{{ student.email }}</td>
-                <td>{{ student.college_name }}</td>
-                <td>{{ student.status }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-<a href="{% url 'download_students_pdf' %}" class="back-btn" style="background-color: #28a745;">
-  ⬇ Download as PDF
-</a>
 
-</body>
-</html>
+{% block title %}Approved Students Export | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
+    }
+    
+    .export-container {
+        max-width: 1200px;
+        margin: 40px auto;
+    }
+
+    .table-responsive-custom {
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .export-table {
+        width: 100%;
+        color: white;
+        min-width: 1000px;
+        border-collapse: collapse;
+    }
+
+    .export-table th {
+        background: rgba(0, 0, 0, 0.4);
+        padding: 15px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--gray);
+        border-bottom: 2px solid var(--glass-border);
+        white-space: nowrap;
+    }
+
+    .export-table td {
+        padding: 15px;
+        font-size: 0.9rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        vertical-align: middle;
+    }
+
+    .export-table tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .student-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="export-container animate-fade-in">
+    <div class="glass-card p-4 mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="fw-bold text-white mb-1">Approved Students Details</h3>
+            <p class="text-gray small mb-0">Tabular report ready for export and printing.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn glass-card text-white border-secondary border-opacity-25 px-4">
+                <i class="fas fa-print me-2"></i> Print view
+            </button>
+            <a href="{% url 'download_students_pdf' %}" class="btn-premium px-4">
+                <i class="fas fa-file-pdf me-2"></i> Download as PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive-custom shadow-2xl">
+        <table class="export-table">
+            <thead>
+                <tr>
+                    <th class="ps-4">Photo</th>
+                    <th>Full Name</th>
+                    <th>ID</th>
+                    <th>DOB</th>
+                    <th>Gender</th>
+                    <th>Blood</th>
+                    <th>Course</th>
+                    <th>Dept</th>
+                    <th>Year/Sem</th>
+                    <th>Batch</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>College</th>
+                    <th class="pe-4 text-end">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in approved_students %}
+                <tr>
+                    <td class="ps-4">
+                        {% if student.student_photo %}
+                            <img src="{{ student.student_photo.url }}" class="student-avatar" alt="photo">
+                        {% else %}
+                            <div class="student-avatar bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center text-gray small">
+                                N/A
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold">{{ student.full_name }}</td>
+                    <td class="text-gray">{{ student.student_id }}</td>
+                    <td>{{ student.dob }}</td>
+                    <td>{{ student.gender }}</td>
+                    <td><span class="badge bg-danger bg-opacity-10 text-danger">{{ student.blood_group }}</span></td>
+                    <td class="text-gray">{{ student.course_name }}</td>
+                    <td class="text-gray">{{ student.department }}</td>
+                    <td>{{ student.year_semester }}</td>
+                    <td class="text-gray">{{ student.batch_year }}</td>
+                    <td class="small">{{ student.phone_number }}</td>
+                    <td class="small text-gray">{{ student.email }}</td>
+                    <td class="small text-truncate" style="max-width: 150px;" title="{{ student.college_name }}">{{ student.college_name }}</td>
+                    <td class="pe-4 text-end">
+                        <span class="badge bg-success bg-opacity-10 text-success">{{ student.status }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="14" class="text-center py-5 text-gray">No approved student records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="javascript:history.back()" class="text-gray text-decoration-none hover-primary small">
+            <i class="fas fa-arrow-left me-1"></i> Return to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

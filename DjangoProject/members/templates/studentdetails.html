@@ -1,228 +1,263 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Student Registration</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
+
+{% block title %}Student Registration | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
     body {
-      background: url("{% static 'image/studentlogin.jpg' %}") no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent),
+                    radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.1), transparent),
+                    var(--dark);
+        min-height: 100vh;
     }
-    .form-container {
-      background-color: rgba(255, 255, 255, 0.95);
-      padding: 30px;
-      margin-top: 50px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    
+    .registration-container {
+        max-width: 900px;
+        margin: 40px auto;
     }
-    .form-floating > label {
-      padding-left: 0.75rem;
+    
+    .form-section-title {
+        border-left: 4px solid var(--primary);
+        padding-left: 15px;
+        margin-bottom: 25px;
+        margin-top: 40px;
     }
+    
+    .form-section-title:first-child {
+        margin-top: 0;
+    }
+
+    .form-control-premium {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control-premium:focus {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        color: white;
+        outline: none;
+    }
+
     .preview-img {
-      max-width: 120px;
-      margin-top: 10px;
-      display: none;
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        object-fit: cover;
+        border: 2px solid var(--primary);
+        display: none;
+        margin-top: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
     }
-    .toggle-password {
-      position: absolute;
-      right: 10px;
-      top: 12px;
-      cursor: pointer;
+
+    .strength-meter {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 2px;
+        margin-top: 8px;
+        overflow: hidden;
     }
-  </style>
-</head>
-<body>
 
-<div class="container">
-  <div class="col-md-8 offset-md-2 form-container">
-    <h3 class="text-center mb-4">Student Registration Form</h3>
-    <form id="studentForm" method="POST" action="#" enctype="multipart/form-data">
-      {% csrf_token %}
-      <div class="form-floating mb-3">
-        <input type="text" class="form-control" name="full_name" id="full_name" placeholder="Full Name" required>
-        <label for="full_name">Full Name</label>
-      </div>
+    .strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}
 
-      <!-- Student ID -->
-      <div class="form-floating mb-3">
-        <input type="text" class="form-control" name="student_id" id="student_id" placeholder="Student ID" required>
-        <label for="student_id">Student ID</label>
-      </div>
+{% block content %}
+<div class="registration-container animate-fade-in">
+    <div class="glass-card p-4 p-md-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-800 display-5 mb-2">Student <span class="text-gradient">Registration</span></h1>
+            <p class="text-gray lead">Create your account to access college transportation services.</p>
+        </div>
 
-      <!-- DOB -->
-      <div class="form-floating mb-3">
-        <input type="date" class="form-control" name="dob" id="dob" required>
-        <label for="dob">Date of Birth</label>
-      </div>
+        <form id="studentForm" method="POST" action="#" enctype="multipart/form-data">
+            {% csrf_token %}
 
-      <!-- Gender -->
-      <div class="form-floating mb-3">
-        <select class="form-select" name="gender" id="gender" required>
-          <option value="" disabled selected>Select Gender</option>
-          <option>Male</option>
-          <option>Female</option>
-          <option>Other</option>
-        </select>
-        <label for="gender">Gender</label>
-      </div>
+            <!-- Section 1: Personal Info -->
+            <h4 class="form-section-title fw-bold text-white">Personal Information</h4>
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Full Name</label>
+                    <input type="text" name="full_name" class="form-control form-control-premium" placeholder="Enter your full name" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Student ID</label>
+                    <input type="text" name="student_id" class="form-control form-control-premium" placeholder="e.g. 21CS001" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Date of Birth</label>
+                    <input type="date" name="dob" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Gender</label>
+                    <select name="gender" class="form-select form-control-premium" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Male" class="bg-dark">Male</option>
+                        <option value="Female" class="bg-dark">Female</option>
+                        <option value="Other" class="bg-dark">Other</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Blood Group</label>
+                    <select name="blood_group" class="form-select form-control-premium" required>
+                        <option value="" disabled selected>Select Group</option>
+                        <option class="bg-dark">A+</option><option class="bg-dark">A-</option>
+                        <option class="bg-dark">B+</option><option class="bg-dark">B-</option>
+                        <option class="bg-dark">AB+</option><option class="bg-dark">AB-</option>
+                        <option class="bg-dark">O+</option><option class="bg-dark">O-</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Profile Photo</label>
+                    <input type="file" name="student_photo" id="student_photo" accept="image/*" class="form-control form-control-premium" required>
+                    <img id="photoPreview" class="preview-img" alt="Preview">
+                </div>
+            </div>
 
-      <!-- Blood Group -->
-      <div class="form-floating mb-3">
-        <select class="form-select" name="blood_group" id="blood_group" required>
-          <option value="" disabled selected>Select Blood Group</option>
-          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-          <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
-        </select>
-        <label for="blood_group">Blood Group</label>
-      </div>
+            <!-- Section 2: Academic Info -->
+            <h4 class="form-section-title fw-bold text-white">Academic Details</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Select Institution</label>
+                    <select name="college_name" id="collegeSelect" class="form-select form-control-premium" required>
+                        <option value="" disabled selected>Choose your college</option>
+                        {% for college in college %}
+                            <option value="{{ college.id }}" class="bg-dark">{{ college.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Course Name</label>
+                    <input type="text" name="course_name" list="courses" class="form-control form-control-premium" placeholder="e.g. B.Tech IT" required>
+                    <datalist id="courses">
+                        <option value="B.Sc Computer Science">
+                        <option value="B.Tech IT">
+                        <option value="B.E Mechanical">
+                        <option value="B.Com CA">
+                    </datalist>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Department</label>
+                    <input type="text" name="department" list="departments" class="form-control form-control-premium" placeholder="e.g. CS" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Year/Semester</label>
+                    <input type="text" name="year_semester" class="form-control form-control-premium" placeholder="e.g. 3rd Year / 6th Sem" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Batch</label>
+                    <input type="text" name="batch_year" class="form-control form-control-premium" placeholder="e.g. 2021-2025" required>
+                </div>
+            </div>
 
-      <!-- Photo Upload -->
-      <div class="mb-3">
-        <label for="student_photo" class="form-label">Upload Photo</label>
-        <input type="file" class="form-control" name="student_photo" id="student_photo" accept="image/*" required>
-        <img id="photoPreview" class="preview-img" alt="Preview">
-      </div>
+            <!-- Section 3: Contact & Security -->
+            <h4 class="form-section-title fw-bold text-white">Contact & Security</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Phone Number</label>
+                    <input type="tel" name="phone_number" class="form-control form-control-premium" placeholder="10-digit mobile" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Email Address</label>
+                    <input type="email" name="email" class="form-control form-control-premium" placeholder="student@college.edu" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Create Password</label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" class="form-control form-control-premium border-end-0" placeholder="••••••••" required>
+                        <span class="input-group-text glass-card border-start-0 border-secondary border-opacity-25 text-gray" style="border-radius: 0 12px 12px 0; cursor: pointer;" onclick="togglePassword('password')">
+                            <i class="fas fa-eye" id="passwordIcon"></i>
+                        </span>
+                    </div>
+                    <div class="strength-meter">
+                        <div id="strengthBar" class="strength-bar"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Confirm Password</label>
+                    <input type="password" name="confirm_password" id="confirm_password" class="form-control form-control-premium" placeholder="••••••••" required>
+                </div>
+            </div>
 
-      <!-- Course Name -->
-      <div class="form-floating mb-3">
-        <input type="text" list="courses" class="form-control" name="course_name" id="course_name" placeholder="Course Name" required>
-        <label for="course_name">Course Name</label>
-        <datalist id="courses">
-          <option value="B.Sc Computer Science">
-          <option value="B.Tech IT">
-          <option value="B.Com">
-          <option value="BBA">
-        </datalist>
-      </div>
+            <div id="passwordError" class="text-danger small mt-3" style="display: none;">
+                <i class="fas fa-exclamation-triangle me-1"></i> Passwords do not match!
+            </div>
 
-      <!-- Department -->
-      <div class="form-floating mb-3">
-        <input type="text" list="departments" class="form-control" name="department" id="department" placeholder="Department" required>
-        <label for="department">Department</label>
-        <datalist id="departments">
-          <option value="Computer Science">
-          <option value="Mechanical">
-          <option value="Electronics">
-        </datalist>
-      </div>
-
-      <!-- Year & Semester -->
-      <div class="form-floating mb-3">
-        <input type="text" class="form-control" name="year_semester" id="year_semester" placeholder="Year / Semester" required>
-        <label for="year_semester">Year / Semester</label>
-      </div>
-
-      <!-- Batch Year -->
-      <div class="form-floating mb-3">
-        <input type="text" class="form-control" name="batch_year" id="batch_year" placeholder="Batch Year" required>
-        <label for="batch_year">Batch Year</label>
-      </div>
-
-      <!-- Phone Number -->
-      <div class="form-floating mb-3">
-        <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="Phone Number" required>
-        <label for="phone_number">Phone Number</label>
-      </div>
-
-      <!-- Email -->
-      <div class="form-floating mb-3">
-        <input type="email" class="form-control" name="email" id="email" placeholder="Email Address" required>
-        <label for="email">Email</label>
-      </div>
-
-      <!-- Password -->
-      <div class="form-floating mb-3 position-relative">
-        <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
-        <label for="password">Password</label>
-        <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
-      </div>
-      <progress id="passwordStrength" title="passwordStrength" max="100" value="0" class="w-100 mb-3"></progress>
-
-      <!-- Confirm Password -->
-      <div class="form-floating mb-3 position-relative">
-        <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
-        <label for="confirm_password">Confirm Password</label>
-        <span class="toggle-password" onclick="togglePassword('confirm_password')">👁️</span>
-      </div>
-      <div id="passwordError" class="text-danger mb-3"></div>
-
-      <!-- College Name -->
-      <div class="form-floating mb-3">
-        <select class="form-select" name="college_name" id="collegeSelect" required>
-          <option value="" disabled selected>Select College</option>
-          {% for college in college %}
-            <option value="{{ college.id }}">{{ college.name }}</option>
-          {% endfor %}
-        </select>
-        <label for="collegeSelect">College Name</label>
-      </div>
-
-      <!-- Submit -->
-      <div class="text-center">
-        <button type="submit" class="btn btn-success px-5">Register</button>
-        <button type="button" class="btn btn-secondary px-5" onclick="history.back();">Back</button>
-      </div>
-    </form>
-  </div>
+            <div class="mt-5 pt-4 border-top border-secondary border-opacity-10 d-flex gap-3">
+                <button type="submit" class="btn-premium flex-grow-1 justify-content-center py-3">Register Student Account</button>
+                <button type="button" onclick="history.back()" class="btn glass-card border-secondary border-opacity-25 text-light px-4">Cancel</button>
+            </div>
+        </form>
+    </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-  // Show/hide password
-  function togglePassword(id) {
-    const input = document.getElementById(id);
-    input.type = input.type === "password" ? "text" : "password";
-  }
-
-  // Confirm password match
-  document.getElementById("studentForm").addEventListener("submit", function(e) {
-    const pwd = document.getElementById("password").value.trim();
-    const cpwd = document.getElementById("confirm_password").value.trim();
-    if (pwd !== cpwd) {
-      e.preventDefault();
-      document.getElementById("passwordError").innerText = "Passwords do not match!";
-      passwordStrengthBar.style.backgroundColor = "red";
-    }
-    else{
-      passwordStrengthBar.style.backgroundColor = "blue";
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        const icon = document.getElementById(id + 'Icon');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
     }
 
-    // Set dynamic form action with selected college ID
-    const collegeId = document.getElementById("collegeSelect").value;
-    if (!collegeId) {
-      e.preventDefault();
-      alert("Please select a college.");
-      return;
-    }
-    this.action = `/studentregister/${collegeId}/`;
-  });
+    document.getElementById("student_photo").addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            const preview = document.getElementById("photoPreview");
+            preview.style.display = "block";
+            preview.src = URL.createObjectURL(file);
+        }
+    });
 
-  // Live image preview
-  document.getElementById("student_photo").addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-      const preview = document.getElementById("photoPreview");
-      preview.style.display = "block";
-      preview.src = URL.createObjectURL(file);
-    }
-  });
+    document.getElementById("password").addEventListener("input", function () {
+        const val = this.value;
+        const bar = document.getElementById("strengthBar");
+        let score = 0;
+        if (val.length >= 6) score += 25;
+        if (/[A-Z]/.test(val)) score += 25;
+        if (/[0-9]/.test(val)) score += 25;
+        if (/[\W]/.test(val)) score += 25;
+        
+        bar.style.width = score + "%";
+        if (score < 50) bar.style.backgroundColor = "#ef4444";
+        else if (score < 100) bar.style.backgroundColor = "#f59e0b";
+        else bar.style.backgroundColor = "#10b981";
+    });
 
-  // Password strength
-  document.getElementById("password").addEventListener("input", function () {
-    const val = this.value;
-    let score = 0;
-    if (val.length >= 6) score += 25;
-    if (/[A-Z]/.test(val)) score += 25;
-    if (/[0-9]/.test(val)) score += 25;
-    if (/[\W]/.test(val)) score += 25;
-    document.getElementById("passwordStrength").value = score;
-  });
+    document.getElementById("studentForm").addEventListener("submit", function(e) {
+        const pwd = document.getElementById("password").value;
+        const cpwd = document.getElementById("confirm_password").value;
+        const errorDiv = document.getElementById("passwordError");
+        
+        if (pwd !== cpwd) {
+            e.preventDefault();
+            errorDiv.style.display = "block";
+            return;
+        }
+        
+        const collegeId = document.getElementById("collegeSelect").value;
+        if (!collegeId) {
+            e.preventDefault();
+            alert("Please select your institution.");
+            return;
+        }
+        this.action = `/studentregister/${collegeId}/`;
+    });
 </script>
-
-</body>
-</html>
+{% endblock %}

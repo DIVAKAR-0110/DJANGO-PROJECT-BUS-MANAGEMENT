@@ -1,70 +1,187 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us</title>
-    <link rel="stylesheet" href="{% static 'css/contactus.css' %}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-</head>
-<body>
-<a href="javascript:history.back()" class="back-button">
-    <span class="arrow">&larr;</span> Back
-</a>
 
-    <section class="contact-hero">
-       <img src="{% static 'image/bus_logo.png' %}" alt="Bus" style="width:100px;height:100px;border-radius:10px;">
-        <h1>Contact Us</h1>
-        <p>We are here to help you. Reach out for any queries or support.</p>
-    </section>
+{% block title %}Contact Us | CIT Bus{% endblock %}
 
-    <section class="contact-form-section">
-        <form id="contactForm" method="post" action="{% url 'contact_submit' %}" enctype="multipart/form-data">
-            <div class="form-group">
-                <input type="text" name="name" placeholder="Your Name" required>
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
+    }
+    
+    .contact-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 30px;
+        overflow: hidden;
+    }
+    
+    .contact-info-panel {
+        background: var(--grad-primary);
+        padding: 60px;
+        height: 100%;
+        color: white;
+    }
+    
+    .contact-form-panel {
+        padding: 60px;
+    }
+    
+    .form-control-premium {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control-premium:focus {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: var(--primary);
+        color: white;
+        outline: none;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-right: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 animate-fade-in">
+    <div class="text-center mb-5">
+        <h1 class="fw-800 display-5 mb-2">Get in <span class="text-gradient">Touch</span></h1>
+        <p class="text-gray lead">Have questions? We're here to help you navigate your journey.</p>
+    </div>
+
+    <div class="contact-card shadow-2xl">
+        <div class="row g-0">
+            <!-- Info Panel -->
+            <div class="col-lg-5">
+                <div class="contact-info-panel">
+                    <h2 class="fw-800 mb-4">Contact Information</h2>
+                    <p class="text-white text-opacity-75 mb-5">Fill out the form and our team will get back to you within 24 hours.</p>
+                    
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-phone"></i></div>
+                        <div>
+                            <div class="small text-white text-opacity-50 text-uppercase fw-bold">Phone</div>
+                            <div class="fw-bold">+91 98765 43210</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <div class="small text-white text-opacity-50 text-uppercase fw-bold">Email</div>
+                            <div class="fw-bold">support@citbus.edu</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div>
+                            <div class="small text-white text-opacity-50 text-uppercase fw-bold">Office</div>
+                            <div class="fw-bold">CIT Main Campus, Coimbatore</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 d-flex gap-3">
+                        <a href="#" class="btn btn-sm glass-card text-white px-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="btn btn-sm glass-card text-white px-3"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="btn btn-sm glass-card text-white px-3"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="email" name="email" placeholder="Your Email" required>
+
+            <!-- Form Panel -->
+            <div class="col-lg-7">
+                <div class="contact-form-panel">
+                    <form id="contactForm">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-gray small fw-bold text-uppercase">Your Name</label>
+                                <input type="text" name="name" class="form-control form-control-premium" placeholder="John Doe" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-gray small fw-bold text-uppercase">Your Email</label>
+                                <input type="email" name="email" class="form-control form-control-premium" placeholder="john@example.com" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-gray small fw-bold text-uppercase">Message</label>
+                                <textarea name="message" class="form-control form-control-premium" rows="5" placeholder="How can we help you?" required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn-premium w-100 justify-content-center py-3">
+                                    Send Message <i class="fas fa-paper-plane ms-2"></i>
+                                </button>
+                                <div id="formMessage" class="mt-3 text-center small" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-            </div>
-            <button type="submit">Send Message</button>
-            <p id="formMessage" class="success-message"></p>
-        </form>
-    </section>
+        </div>
+    </div>
 
-    <footer>
-        <p>&copy; 2025 College Bus Management System. All Rights Reserved.</p>
-    </footer>
+    <div class="mt-5 text-center">
+        <button class="btn glass-card px-4 py-2 text-gray small" onclick="history.back()">
+            <i class="fas fa-arrow-left me-2"></i> Back
+        </button>
+    </div>
+</div>
+{% endblock %}
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $('#contactForm').submit(function(e){
-                e.preventDefault();
-                const formData = $(this).serialize();
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#contactForm').submit(function(e){
+            e.preventDefault();
+            const btn = $(this).find('button');
+            const originalText = btn.html();
+            const formMsg = $('#formMessage');
+            
+            btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Sending...');
 
-                $.ajax({
-                    type: "POST",
-                    url: "{% url 'contact_submit' %}",
-                    data: formData,
-                    headers: {'X-CSRFToken': '{{ csrf_token }}'},
-                    success: function(response){
-                        if(response.success){
-                            $('#formMessage').css('color', 'green').text(response.message).fadeIn().delay(3000).fadeOut();
-                            $('#contactForm')[0].reset();
-                        } else {
-                            $('#formMessage').css('color', 'red').text(response.message).fadeIn().delay(3000).fadeOut();
-                        }
-                    },
-                    error: function(){
-                        $('#formMessage').css('color', 'red').text("Oops! Something went wrong.").fadeIn().delay(3000).fadeOut();
+            $.ajax({
+                type: "POST",
+                url: "{% url 'contact_submit' %}",
+                data: $(this).serialize(),
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                success: function(response){
+                    btn.prop('disabled', false).html(originalText);
+                    if(response.success){
+                        formMsg.removeClass('text-danger').addClass('text-success').text(response.message).fadeIn();
+                        $('#contactForm')[0].reset();
+                    } else {
+                        formMsg.removeClass('text-success').addClass('text-danger').text(response.message).fadeIn();
                     }
-                });
+                    setTimeout(() => formMsg.fadeOut(), 5000);
+                },
+                error: function(){
+                    btn.prop('disabled', false).html(originalText);
+                    formMsg.removeClass('text-success').addClass('text-danger').text("Oops! Something went wrong.").fadeIn();
+                }
             });
         });
-    </script>
-</body>
-</html>
+    });
+</script>
+{% endblock %}

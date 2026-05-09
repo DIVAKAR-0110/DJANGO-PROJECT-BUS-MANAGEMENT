@@ -1,102 +1,136 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ college.name }} - Bus Routes</title>
-  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <style>
+
+{% block title %}{{ college.name }} - Bus Routes | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
     body {
-      background: linear-gradient(to right, #edf2f7, #c3dafe);
-      font-family: 'Segoe UI', sans-serif;
+        background-color: var(--dark);
     }
+    
+    .route-card-premium {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--glass-border);
+        background: var(--glass);
+        height: 100%;
+    }
+    
+    .route-card-premium:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .route-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--grad-primary);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: white;
+    }
+</style>
+{% endblock %}
 
-    .route-card {
-      border-radius: 16px;
-      background: #ffffff;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-    }
-
-    .route-card:hover {
-      transform: scale(1.02);
-    }
-
-    .route-title {
-      font-weight: 600;
-      color: #2d3748;
-    }
-
-    .route-details {
-      font-size: 0.95rem;
-      color: #4a5568;
-    }
-
-    .btn-route {
-      background-color: #4c51bf;
-      color: #fff;
-      border-radius: 8px;
-    }
-
-    .btn-route:hover {
-      background-color: #434190;
-    }
-
-    .icon-button {
-      background: none;
-      border: none;
-      color: #4c51bf;
-      cursor: pointer;
-      font-size: 1.2rem;
-      margin-right: 10px;
-    }
-
-    .icon-button:hover {
-      color: #434190;
-    }
-  </style>
-</head>
-<body>
-{% csrf_token %}
-{% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-success">{{ message }}</div>
-  {% endfor %}
-{% endif %}
-  <div class="container py-5">
-    <h2 class="mb-4 text-center text-primary fw-bold">{{ college.name }} - Bus Routes</h2>
-    <div class="row g-4">
-      {% for route in routes %}
-        <div class="col-md-6 col-lg-4">
-          <div class="card route-card p-3 h-100">
-            <div class="card-body d-flex flex-column">
-              <h5 class="route-title">{{ route.route_name }}</h5>
-              <p class="route-details mb-1">From: {{ route.driver_name }}</p>
-              <p class="route-details mb-1">To: {{ route.number_of_seats }}</p>
-              <p class="route-details mb-2">Stops: {{ route.bus_number }}</p>
-              <div class="d-flex justify-content-between align-items-center mt-auto">
-                <div><center>
-                  <button class="icon-button" onclick="if(confirm('Are you sure you want to edit this route?')) { location.href='{% url 'editroutes' route.id college_id %}' }" title="Edit">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="icon-button" onclick="if(confirm('Are you sure you want to delete this route?')) { location.href='{% url 'deleteroutes' route.id college_id %}' }" title="Delete">
-                    <i class="fas fa-trash-alt"></i>
-                  </button></center>
-                </div>
-                <a href="{% url 'add_stop' route.id route.route_name college.id %}" class="btn btn-route">Add Stops</a>
-                <a href="{% url 'view_stops' route.id college.name %}" class="btn btn-route">View Stops</a>
-              </div>
-            </div>
-          </div>
+{% block content %}
+<div class="container animate-fade-in">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h6 class="text-primary fw-bold text-uppercase small mb-2">Fleet Management</h6>
+            <h1 class="display-5 fw-800 mb-0">Bus <span class="text-gradient">Routes</span></h1>
+            <p class="text-gray lead mb-0">{{ college.name }}</p>
         </div>
-      {% empty %}
-        <div class="text-center text-muted">No routes added yet for {{ college.name }}.</div>
-      {% endfor %}
+        <a href="{% url 'addroute' college_id %}" class="btn-premium">
+            <i class="fas fa-plus me-2"></i> Add New Route
+        </a>
     </div>
-  </div><center>
-<button type="button" onclick="history.back();">Back</button></center>
-</body>
-</html>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert glass-card border-success border-opacity-25 text-success mb-4 d-flex align-items-center">
+                <i class="fas fa-check-circle me-3"></i> {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        {% for route in routes %}
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-card p-4 route-card-premium d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="route-icon">
+                            <i class="fas fa-bus"></i>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn glass-card p-2 text-gray border-0" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end glass-card border-secondary border-opacity-25">
+                                <li>
+                                    <a class="dropdown-item text-light small py-2" href="{% url 'editroutes' route.id college_id %}" onclick="return confirm('Edit this route?')">
+                                        <i class="fas fa-edit me-2 text-primary"></i> Edit Route
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger small py-2" href="{% url 'deleteroutes' route.id college_id %}" onclick="return confirm('Delete this route?')">
+                                        <i class="fas fa-trash-alt me-2"></i> Delete Route
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4 class="fw-bold text-white mb-3">{{ route.route_name }}</h4>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-id-badge text-gray me-3" style="width: 15px;"></i>
+                            <span class="text-gray small">Driver: </span>
+                            <span class="text-white small ms-2 fw-bold">{{ route.driver_name }}</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-users text-gray me-3" style="width: 15px;"></i>
+                            <span class="text-gray small">Capacity: </span>
+                            <span class="text-white small ms-2 fw-bold">{{ route.number_of_seats }} Seats</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-hashtag text-gray me-3" style="width: 15px;"></i>
+                            <span class="text-gray small">Bus No: </span>
+                            <span class="text-white small ms-2 fw-bold">{{ route.bus_number }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto d-grid gap-2">
+                        <a href="{% url 'view_stops' route.id college.name %}" class="btn glass-card border-secondary border-opacity-25 text-light py-2">
+                            <i class="fas fa-map-marker-alt me-2 text-primary"></i> View Stops
+                        </a>
+                        <a href="{% url 'add_stop' route.id route.route_name college.id %}" class="btn glass-card border-secondary border-opacity-25 text-light py-2">
+                            <i class="fas fa-plus-circle me-2 text-primary"></i> Add Stop
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="glass-card p-5 text-center">
+                    <div class="mb-3 opacity-25">
+                        <i class="fas fa-route display-1"></i>
+                    </div>
+                    <h5 class="text-gray">No routes found for {{ college.name }}</h5>
+                    <p class="text-gray small">Start by adding your first bus route using the button above.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-5 text-center">
+        <button class="btn glass-card px-4 py-2 text-gray small" onclick="history.back()">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </button>
+    </div>
+</div>
+{% endblock %}

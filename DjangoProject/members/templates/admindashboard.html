@@ -1,103 +1,223 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard</title>
-  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
+
+{% block title %}Admin Dashboard | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to right, #e0eafc, #cfdef3);
+        background-color: var(--dark);
     }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-radius: 1rem;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    
+    .sidebar-premium {
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(20px);
+        border-right: 1px solid var(--glass-border);
+        min-height: calc(100vh - 80px);
     }
-
-    .sidebar-link:hover {
-      background-color: rgba(255, 255, 255, 0.15);
-      border-radius: 0.5rem;
+    
+    .nav-pill-premium {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--gray);
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        margin-bottom: 8px;
     }
-  </style>
-</head>
-<body class="flex">
-{% csrf_token %}
-  <!-- Sidebar -->
-  <aside class="w-64 min-h-screen p-5 glass text-white bg-gradient-to-b from-blue-500 to-indigo-600 shadow-xl">
-    <h1 class="text-2xl font-bold mb-10 text-center">Admin Panel</h1>
-    <nav class="flex flex-col space-y-4">
-      <a href="#" class="sidebar-link px-4 py-2 transition">📊 Dashboard</a>
-      <a href="#" class="sidebar-link px-4 py-2 transition">👤 Users</a>
-      <a href="{% url 'college_requests' %}" class="sidebar-link px-4 py-2 transition">🏫 College Requests</a>
-      <a href="{% url 'approved_colleges' %}" class="sidebar-link px-4 py-2 transition">✅ Approved Colleges</a>
-      <a href="{% url 'rejected_colleges' %}" class="sidebar-link px-4 py-2 transition">❌ Rejected Colleges</a>
-      <a href="#" class="sidebar-link px-4 py-2 transition">🚌 Bus Routes</a>
-      <a href="#" class="sidebar-link px-4 py-2 transition">🗺️ Bus Stops</a>
-      <a href="#" class="sidebar-link px-4 py-2 transition">📄 Third-Party Students</a>
-      <a href="{% url 'mainpage' %}" onclick="history.back();" class="sidebar-link px-4 py-2 transition"><i class="fas fa-sign-out-alt"></i> Log out</a>
-    </nav>
-  </aside>
-
-  <!-- Main Content -->
-  <main class="flex-1 p-10">
-    <header class="mb-8">
-      <h2 class="text-3xl font-bold text-gray-800">Welcome, Admin</h2>
-      <p class="text-gray-500">Manage everything from one place.</p>
-    </header>
-
-    <!-- Dashboard Cards -->
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-      <div class="glass p-6 text-center text-white bg-gradient-to-br from-purple-500 to-indigo-600">
-        <h3 class="text-xl font-semibold">Total Users</h3>
-        <p class="text-3xl mt-2 font-bold">154</p>
-      </div>
-      <div class="glass p-6 text-center text-white bg-gradient-to-br from-pink-500 to-red-500">
-        <h3 class="text-xl font-semibold">Pending Colleges</h3>
-        <p class="text-3xl mt-2 font-bold">{{ waiting_college_count }}</p>
-      </div>
-      <div class="glass p-6 text-center text-white bg-gradient-to-br from-green-400 to-green-600">
-        <h3 class="text-xl font-semibold">Bus Routes</h3>
-        <p class="text-3xl mt-2 font-bold">{{ busroutes_count}}</p>
-      </div>
-      <div class="glass p-6 text-center text-white bg-gradient-to-br from-yellow-400 to-orange-500">
-        <h3 class="text-xl font-semibold">Students</h3>
-        <p class="text-3xl mt-2 font-bold">{{ student_count }}</p>
-      </div>
-    </section>
-
-    <!-- Section Placeholder -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-      <div class="glass p-6">
-        <h4 class="text-xl font-bold mb-2 text-gray-800">User Management</h4>
-        <p class="text-gray-600">View, edit, or delete user records.</p>
-        <!-- You can add table or card layout here -->
-      </div>
-
-      <div class="glass p-6">
-        <h4 class="text-xl font-bold mb-2 text-gray-800">College Approvals &nbsp &nbsp == ><center><span style="font-size:35px;font-weight:10px;color:#ff0000d6;">{{ college_count }}</span></center></h4>
-        <p class="text-gray-600">Review and verify pending college applications.</p>
-      </div>
-
-      <button type="button" onclick="asdf()">Generate Pdf </button>
-
-
-      <!-- More sections -->
-    </section>
-  </main>
-
-</body>
-<script>
-   function asdf(){
-      window.location.href="#";
+    
+    .nav-pill-premium:hover, .nav-pill-premium.active {
+        background: var(--glass);
+        color: var(--primary-light);
+        transform: translateX(5px);
     }
-</script>
-</html>
+    
+    .stat-card-premium {
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    .stat-card-premium::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+        opacity: 0.1;
+        z-index: -1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+        <div class="sidebar-premium p-3 rounded-4 shadow-lg sticky-top" style="top: 100px;">
+            <div class="mb-4 px-3">
+                <h6 class="text-gray text-uppercase small fw-bold mb-3">Main Menu</h6>
+                <nav>
+                    <a href="#" class="nav-pill-premium active">
+                        <i class="fas fa-chart-pie"></i> Overview
+                    </a>
+                    <a href="{% url 'college_requests' %}" class="nav-pill-premium">
+                        <i class="fas fa-school"></i> College Requests
+                        <span class="badge bg-primary ms-auto">{{ waiting_college_count }}</span>
+                    </a>
+                    <a href="{% url 'approved_colleges' %}" class="nav-pill-premium">
+                        <i class="fas fa-check-circle"></i> Approved Colleges
+                    </a>
+                    <a href="{% url 'rejected_colleges' %}" class="nav-pill-premium">
+                        <i class="fas fa-times-circle"></i> Rejected Colleges
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="mb-4 px-3 pt-4 border-top border-secondary border-opacity-10">
+                <h6 class="text-gray text-uppercase small fw-bold mb-3">Management</h6>
+                <nav>
+                    <a href="#" class="nav-pill-premium">
+                        <i class="fas fa-route"></i> Bus Routes
+                    </a>
+                    <a href="#" class="nav-pill-premium">
+                        <i class="fas fa-map-marker-alt"></i> Bus Stops
+                    </a>
+                    <a href="#" class="nav-pill-premium">
+                        <i class="fas fa-users"></i> Students
+                    </a>
+                </nav>
+            </div>
+
+            <div class="px-3 pt-4 border-top border-secondary border-opacity-10">
+                <a href="{% url 'mainpage' %}" class="nav-pill-premium text-danger">
+                    <i class="fas fa-power-off"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-9">
+        <header class="mb-5">
+            <h2 class="display-5 fw-bold mb-1">System <span class="text-gradient">Overview</span></h2>
+            <p class="text-gray lead">Welcome back, Administrator. Here's what's happening today.</p>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="glass-card p-4 stat-card-premium h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="p-2 glass-card rounded-3" style="width: 40px; height: 40px;">
+                            <i class="fas fa-school text-primary"></i>
+                        </div>
+                        <span class="badge bg-success bg-opacity-10 text-success fw-bold">+12%</span>
+                    </div>
+                    <h6 class="text-gray mb-1">Institutions</h6>
+                    <h2 class="fw-bold mb-0">{{ college_count }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card p-4 stat-card-premium h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="p-2 glass-card rounded-3" style="width: 40px; height: 40px;">
+                            <i class="fas fa-hourglass-half text-warning"></i>
+                        </div>
+                        <span class="badge bg-danger bg-opacity-10 text-danger fw-bold">Action Needed</span>
+                    </div>
+                    <h6 class="text-gray mb-1">Pending Reg.</h6>
+                    <h2 class="fw-bold mb-0">{{ waiting_college_count }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card p-4 stat-card-premium h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="p-2 glass-card rounded-3" style="width: 40px; height: 40px;">
+                            <i class="fas fa-bus text-info"></i>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary fw-bold">Active</span>
+                    </div>
+                    <h6 class="text-gray mb-1">Active Routes</h6>
+                    <h2 class="fw-bold mb-0">{{ busroutes_count }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card p-4 stat-card-premium h-100">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="p-2 glass-card rounded-3" style="width: 40px; height: 40px;">
+                            <i class="fas fa-user-graduate text-success"></i>
+                        </div>
+                        <span class="badge bg-success bg-opacity-10 text-success fw-bold">+5%</span>
+                    </div>
+                    <h6 class="text-gray mb-1">Total Students</h6>
+                    <h2 class="fw-bold mb-0">{{ student_count }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="glass-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold mb-0">Recent Activity</h4>
+                        <button class="btn glass-card py-1 px-3 border-secondary border-opacity-25 small text-light">View All</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover border-0 mb-0">
+                            <thead>
+                                <tr class="text-gray small border-bottom border-secondary border-opacity-25">
+                                    <th class="fw-bold bg-transparent">INSTITUTION</th>
+                                    <th class="fw-bold bg-transparent">ACTION</th>
+                                    <th class="fw-bold bg-transparent">DATE</th>
+                                    <th class="fw-bold bg-transparent">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="align-middle border-bottom border-secondary border-opacity-10">
+                                    <td class="bg-transparent py-3">CIT Coimbatore</td>
+                                    <td class="bg-transparent">New Bus Route Added</td>
+                                    <td class="bg-transparent text-gray small">2 mins ago</td>
+                                    <td class="bg-transparent"><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
+                                </tr>
+                                <tr class="align-middle border-bottom border-secondary border-opacity-10">
+                                    <td class="bg-transparent py-3">PSG Tech</td>
+                                    <td class="bg-transparent">New College Reg.</td>
+                                    <td class="bg-transparent text-gray small">15 mins ago</td>
+                                    <td class="bg-transparent"><span class="badge bg-warning bg-opacity-10 text-warning">Pending</span></td>
+                                </tr>
+                                <tr class="align-middle border-bottom border-secondary border-opacity-10">
+                                    <td class="bg-transparent py-3">Amrita Univ.</td>
+                                    <td class="bg-transparent">Student Approval</td>
+                                    <td class="bg-transparent text-gray small">1 hour ago</td>
+                                    <td class="bg-transparent"><span class="badge bg-success bg-opacity-10 text-success">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="glass-card p-4 h-100">
+                    <h4 class="fw-bold mb-4">Quick Actions</h4>
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'college_requests' %}" class="btn-premium w-100">
+                            <i class="fas fa-clipboard-check"></i> Review Requests
+                        </a>
+                        <button class="btn glass-card border-secondary border-opacity-25 text-light w-100 py-3 d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-file-pdf"></i> Generate System Report
+                        </button>
+                        <button class="btn glass-card border-secondary border-opacity-25 text-light w-100 py-3 d-flex align-items-center justify-content-center gap-2">
+                            <i class="fas fa-cog"></i> System Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

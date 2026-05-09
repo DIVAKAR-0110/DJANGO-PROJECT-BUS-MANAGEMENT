@@ -1,302 +1,158 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Department Management - Bus Management</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+{% block title %}Department Management | {{ college.name }}{% endblock %}
+
+{% block extra_css %}
 <style>
-  :root {
-    --color-primary: #7c3aed; /* Saturated purple */
-    --color-primary-light: #a78bfa;
-    --color-bg: #ffffff;
-    --color-text-primary: #1f2937; /* Gray-800 */
-    --color-text-secondary: #6b7280; /* Gray-500 */
-    --color-card-bg: #f9f9fb;
-    --color-card-shadow: rgba(124, 58, 237, 0.1);
-    --radius: 12px;
-    --space: 24px;
-    --transition: 0.3s ease;
-  }
-  /* Reset and base */
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: var(--color-bg);
-    color: var(--color-text-primary);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.6;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* HEADER */
-  header {
-    position: sticky;
-    top: 0;
-    background: var(--color-bg);
-    border-bottom: 1px solid #e5e7eb;
-    z-index: 1000;
-    box-shadow: 0 1px 8px rgba(0,0,0,0.03);
-  }
-  .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    padding: 16px var(--space);
-  }
-  button.back-button {
-    all: unset;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background-color var(--transition);
-  }
-  button.back-button:hover,
-  button.back-button:focus {
-    background-color: var(--color-primary-light);
-    outline: none;
-  }
-  .material-icons.back-icon {
-    font-size: 32px;
-    color: var(--color-primary);
-    transition: transform var(--transition);
-  }
-  button.back-button:hover .back-icon {
-    transform: translateX(-6px);
-  }
-  h1.title {
-    font-weight: 700;
-    font-size: 1.75rem;
-    margin-left: 16px;
-    color: var(--color-primary);
-    user-select: none;
-    margin:auto;
-  }
-
-  main {
-    flex: 1;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--space) 32px 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* Hero section with illustration & text */
-  .hero {
-    width: 100%;
-    margin-bottom: 48px;
-    text-align: center;
-    position: relative;
-  }
-  .hero-art {
-    max-width: 600px;
-    margin: 0 auto 24px;
-    user-select: none;
-    filter: drop-shadow(0 12px 12px rgba(124, 58, 237, 0.1));
-    animation: floatUp 4s ease-in-out infinite alternate;
-  }
-  @keyframes floatUp {
-    from { transform: translateY(0); }
-    to { transform: translateY(-16px); }
-  }
-  .hero-header {
-    font-size: 2.75rem;
-    font-weight: 800;
-    color: var(--color-primary);
-    line-height: 1.1;
-    margin-bottom: 8px;
-    animation: fadeInMoveDown 1s ease forwards;
-    opacity: 0;
-  }
-  .hero-subtext {
-    font-size: 1.15rem;
-    color: var(--color-text-secondary);
-    max-width: 600px;
-    margin: 0 auto;
-    animation: fadeInMoveDown 1.2s ease forwards;
-    opacity: 0;
-  }
-
-  /* Cards container */
-  .cards {
-    display: flex;
-    gap: 32px;
-    justify-content: center;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: 1000px;
-  }
-  .card {
-    background: var(--color-card-bg);
-    border-radius: var(--radius);
-    box-shadow: 0 8px 20px var(--color-card-shadow);
-    flex: 1 1 280px;
-    max-width: 320px;
-    padding: 28px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: box-shadow var(--transition), transform var(--transition);
-    user-select: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: var(--color-primary);
-  }
-  .card:hover,
-  .card:focus-visible {
-    box-shadow: 0 15px 40px rgba(124, 58, 237, 0.35);
-    transform: translateY(-8px) scale(1.03);
-    outline: none;
-  }
-  .card-icon {
-    font-size: 56px;
-    margin-bottom: 20px;
-    transition: color var(--transition);
-  }
-  .card-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-  .card-desc {
-    font-size: 1rem;
-    color: var(--color-text-secondary);
-    flex-grow: 1;
-  }
-
-  /* Footer */
-  footer {
-    background: #f3f4f6;
-    padding: 20px 0;
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--color-text-secondary);
-    font-weight: 600;
-    user-select: none;
-    border-top: 1px solid #e5e7eb;
-  }
-
-  /* Animations */
-  @keyframes fadeInMoveDown {
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    body {
+        background-color: var(--dark);
     }
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
+    
+    .hero-section {
+        padding: 60px 0;
+        text-align: center;
     }
-  }
 
-  /* Responsive */
-  @media (max-width: 1024px) {
-    main {
-      padding: var(--space) 16px 80px;
+    .hero-img {
+        max-width: 500px;
+        width: 100%;
+        margin-bottom: 30px;
+        filter: drop-shadow(0 20px 40px rgba(99, 102, 241, 0.2));
+        animation: float 6s ease-in-out infinite;
     }
-    .cards {
-      gap: 24px;
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
     }
-  }
-  @media (max-width: 768px) {
-    .hero-header {
-      font-size: 2rem;
+
+    .action-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 30px;
+        padding: 40px 30px;
+        height: 100%;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
     }
-    .cards {
-      flex-direction: column;
-      max-width: 400px;
-      margin: 0 auto;
+
+    .action-card:hover {
+        transform: translateY(-15px);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     }
-    .card {
-      max-width: 100%;
+
+    .action-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--grad-primary);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        margin: 0 auto 25px;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
     }
-  }
+
+    .action-card h3 {
+        font-weight: 800;
+        color: white;
+        margin-bottom: 15px;
+    }
+
+    .action-card p {
+        color: var(--gray);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .card-accent {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--grad-primary);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .action-card:hover .card-accent {
+        opacity: 1;
+    }
 </style>
-</head>
-<body>
-<header>
-  {% for college in colleges %}
-  {% if college.id == college_id %}
-  <div class="header-container">
-      <span class="material-icons back-icon" style="cursor:pointer;" onclick="history.back();" aria-hidden="true"><title>Go Back</title>arrow_back</span>
-    <h1 class="title">Department Management</h1>
-  </div>
-</header>
-<main>
+{% endblock %}
 
-  <center>
-  <h2>{{ college.name }}</h2><h4>{{ college.address }}</h4></center>
-  <section class="hero" role="banner" aria-label="Hero section with art and introduction">
-    <img
-      src="{% static 'image/department_main.png' %}"
-      alt="Artistic abstract illustration representing an advanced web developer working efficiently"
-      class="hero-art"
-      width="600" height="300"
-      loading="lazy"
-      onerror="this.style.display='none';"
-    />
-    <h2 class="hero-header">Works For You</h2>
-    <p class="hero-subtext">Manage Your Departments Effortlessly & Efficiently</p>
-  </section>
-  <section class="cards" role="main" aria-label="Department management actions">
-    <article tabindex="0" onclick="qwerty()" class="card" role="button" aria-pressed="false" aria-label="Add Departments">
-      <span class="material-icons card-icon" aria-hidden="true">add_business</span>
-      <h3 class="card-title">Add Departments<h4>And its courses</h4></h3>
-      <p class="card-desc">Create and configure new departments in your organization with ease.</p>
-    </article>
-    <article tabindex="0" onclick="asdf()" class="card" role="button" aria-pressed="false" aria-label="View Departments">
-      <span class="material-icons card-icon" aria-hidden="true">visibility</span>
-      <h3 class="card-title">View Departments<h4>And its courses</h4></h3>
-      <p class="card-desc">Browse and search through your departments to manage details efficiently.</p>
-    </article>
-    <article tabindex="0" class="card" role="button" aria-pressed="false" aria-label="Delete Departments">
-      <span class="material-icons card-icon" aria-hidden="true">delete_forever</span>
-      <h3 class="card-title">Delete Departments<h4>And its courses</h4></h3>
-      <p class="card-desc">Remove obsolete or unused departments securely and quickly.</p>
-    </article>
-  </section>
-  {% endif %}
-  {% endfor %}
-</main>
-<footer>
-  Designed by DIVAKAR R
-</footer>
-<script>
-  // Accessibility: toggle aria-pressed on cards on click or enter key
-  const cards = document.querySelectorAll('.card');
-  cards.forEach(card => {
-    card.addEventListener('click', () => {
-      const pressed = card.getAttribute('aria-pressed') === 'true';
-      card.setAttribute('aria-pressed', !pressed);
-    });
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        card.click();
-      }
-    });
-  });
+{% block content %}
+<div class="container animate-fade-in">
+    {% for college in colleges %}
+    {% if college.id == college_id %}
+    
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <img src="{% static 'image/department_main.png' %}" class="hero-img" alt="Department Management">
+        <h1 class="display-3 fw-800 mb-3 text-white">Works For <span class="text-gradient">You</span></h1>
+        <p class="text-gray lead mx-auto" style="max-width: 600px;">
+            Manage your institution's academic structure effortlessly with our centralized department and course controller.
+        </p>
+        <div class="mt-4">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 fw-bold">
+                <i class="fas fa-university me-2"></i> {{ college.name }}
+            </span>
+        </div>
+    </div>
 
-  function qwerty(){
-    window.location.href="{% url 'add_department' college_id %}";
-  }
-  function asdf(){
-    window.location.href="{% url 'view_departments' college_id %}";
-  }
-</script>
-</body>
-</html>
+    <!-- Actions Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4" onclick="window.location.href='{% url 'add_department' college_id %}'">
+            <div class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h3>Add Department</h3>
+                <p>Register new academic branches and configure their core information and initial courses.</p>
+                <div class="card-accent"></div>
+            </div>
+        </div>
+
+        <div class="col-md-4" onclick="window.location.href='{% url 'view_departments' college_id %}'">
+            <div class="action-card">
+                <div class="action-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);">
+                    <i class="fas fa-th-list"></i>
+                </div>
+                <h3>View & Edit</h3>
+                <p>Browse your existing departments, update faculty details, and manage student capacities.</p>
+                <div class="card-accent" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);"></div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="action-card">
+                <div class="action-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <h3>Decommission</h3>
+                <p>Securely remove obsolete departments or archive historical academic structures from the portal.</p>
+                <div class="card-accent" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <button class="btn glass-card px-5 py-3 text-gray" onclick="history.back()">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </button>
+    </div>
+
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
 

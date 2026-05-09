@@ -1,130 +1,258 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ route.route_name }} - Details</title>
-  <link rel="icon" href="{% static 'image/bus_logo.png' %}" type="image/x-icon">
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-green-100 min-h-screen">
-  <div class="max-w-4xl mx-auto p-6">
-    <h1 class="text-3xl font-bold text-center text-green-700">🚌 {{ route.route_name }} - {{ route.bus_number }}</h1>
 
-    <div class="bg-white rounded shadow p-6 mt-8">
-      <h2 class="text-xl text-green-700 font-semibold mb-4">🌄 Morning Stops</h2>
-      <table class="w-full border">
-        <thead class="bg-green-200">
-          <tr>
-            <th class="p-2 text-left">Stop Name</th>
-            <th class="p-2 text-left">Location</th>
-            <th class="p-2">Fare</th>
-            <th class="p-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for stop in stops %}
-            {% if stop.time_type == 'AM' %}
-              <tr class="border-t hover:bg-green-50">
-                <td class="p-2">{{ stop.name }}</td>
-                <td class="p-2">{{ stop.location }}</td>
-                <td class="p-2">₹{{ stop.price }}</td>
-                <td class="p-2">
-                  <button onclick="openFareModal({{ stop.id }}, '{{ stop.name }}', {{ stop.price }})" class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700">Pay</button>
-                </td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
+{% block title %}{{ route.route_name }} - Select Stop | CIT Bus{% endblock %}
 
-      <p class="text-center mt-2 text-sm text-gray-600">Semester Working Days: <strong>{{ working_days }}</strong></p>
-    </div>
-
-    <div class="text-center mt-6">
-      <h2 class="text-xl font-semibold text-green-800">Total Fare: ₹<span id="total-fare">0</span></h2>
-    </div>
-
-    <form id="paymentForm" method="get" action="" onsubmit="return setFareValue()">
-      <input type="hidden" name="total_fare" id="totalFareInput">
-      <button type="submit" class="mt-4 bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded">
-        Apply & Proceed to Payment
-      </button>
-    </form>
-
-    <div class="mt-4 text-center">
-      <a href="javascript:history.back()" class="text-green-700 hover:underline">← Back to Routes</a>
-    </div>
-  </div>
-
-  <!-- Fare Modal -->
-  <div id="fareModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded shadow-lg max-w-md w-full">
-      <h3 class="text-xl font-bold text-center text-green-700 mb-4">Choose Travel Option</h3>
-
-      <p class="text-center mb-2">Stop: <span id="selected-stop-name"></span><br>Fare: ₹<span id="base-fare-display"></span></p>
-
-      <div class="mb-4">
-        <label><input type="radio" name="fare_option" value="custom" onchange="toggleDaysInput(true)"> Custom Days</label>
-        <input type="number" id="daysInput" min="1" class="ml-2 border p-1 rounded w-20" oninput="calculateFare()" disabled>
-      </div>
-
-      <div class="mb-4">
-        <label><input type="radio" name="fare_option" value="semester" onchange="toggleDaysInput(false)"> Semester ({{ working_days }} days)</label>
-      </div>
-
-      <div class="text-center font-semibold">Calculated Fare: ₹<span id="calculatedFare">0</span></div>
-
-      <div class="mt-4 flex justify-between">
-        <button onclick="closeFareModal()" class="px-4 py-1 bg-gray-300 rounded">Cancel</button>
-        <button type="submit" form="paymentForm" class="px-4 py-1 bg-green-600 text-white rounded hover:bg-green-700">Apply</button>
-      </div>
-    </div>
-  </div>
-
-<script>
-  const workingDays = {{ working_days }};
-  let selectedFare = 0;
-  let selectedStopId = null;
-
-  function openFareModal(id, name, fare) {
-    selectedFare = fare;
-    selectedStopId = id;
-    document.getElementById('selected-stop-name').innerText = name;
-    document.getElementById('base-fare-display').innerText = fare;
-    document.getElementById('fareModal').classList.remove('hidden');
-  }
-
-  function closeFareModal() {
-    document.getElementById('fareModal').classList.add('hidden');
-  }
-
-  function toggleDaysInput(enabled) {
-    const input = document.getElementById('daysInput');
-    input.disabled = !enabled;
-    if (!enabled) {
-      const total = selectedFare * workingDays;
-      document.getElementById('calculatedFare').innerText = total;
-      document.getElementById('total-fare').innerText = total;
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
     }
-  }
+    
+    .stop-row {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
 
-  function calculateFare() {
-    const days = parseInt(document.getElementById('daysInput').value);
-    const total = days * selectedFare;
-    document.getElementById('calculatedFare').innerText = isNaN(total) ? 0 : total;
-    document.getElementById('total-fare').innerText = isNaN(total) ? 0 : total;
-  }
+    .stop-row:hover {
+        background: rgba(99, 102, 241, 0.05) !important;
+    }
 
-  function setFareValue() {
-    const totalFare = document.getElementById('total-fare').innerText.replace('₹', '');
-    document.getElementById('totalFareInput').value = totalFare;
-    const form = document.getElementById('paymentForm');
-    const routeId = {{ route.id }};
-    const studentId = '{{ student.student_id }}';
-    form.action = `/payment_page/${routeId}/${selectedStopId}/${studentId}/`;
-    return true;
-  }
+    .total-fare-card {
+        background: var(--grad-primary);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+    }
+
+    .modal-content-premium {
+        background: var(--dark) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 30px !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.8) !important;
+    }
+
+    .fare-option {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .fare-option:hover {
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .fare-option.active {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 animate-fade-in">
+    <div class="text-center mb-5">
+        <h6 class="text-primary fw-bold text-uppercase small mb-2">Service Route</h6>
+        <h1 class="display-5 fw-800 mb-2">{{ route.route_name }}</h1>
+        <p class="text-gray lead">Bus No: <span class="text-white fw-bold">{{ route.bus_number }}</span></p>
+    </div>
+
+    <div class="row g-5">
+        <!-- Stops List -->
+        <div class="col-lg-8">
+            <div class="glass-card p-0 overflow-hidden shadow-2xl">
+                <div class="p-4 border-bottom border-secondary border-opacity-10 d-flex justify-content-between align-items-center">
+                    <h4 class="fw-bold text-white mb-0">Select Your Boarding Point</h4>
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">Morning Schedule</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover mb-0 align-middle">
+                        <thead>
+                            <tr class="bg-white bg-opacity-5">
+                                <th class="border-0 py-3 ps-4 text-gray small text-uppercase fw-800">Boarding Stop</th>
+                                <th class="border-0 py-3 text-gray small text-uppercase fw-800 text-center">Fare / Day</th>
+                                <th class="border-0 py-3 pe-4 text-end text-gray small text-uppercase fw-800">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stop in stops %}
+                                {% if stop.time_type == 'AM' %}
+                                <tr class="stop-row">
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-white">{{ stop.name }}</div>
+                                                <div class="smaller text-gray">{{ stop.location|default:"City Route" }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="fw-bold text-primary">₹{{ stop.price }}</div>
+                                    </td>
+                                    <td class="pe-4 text-end">
+                                        <button onclick="openFareModal({{ stop.id }}, '{{ stop.name }}', {{ stop.price }})" class="btn-premium py-2 px-4 small">
+                                            Select
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-4 glass-card text-center border-secondary border-opacity-10">
+                <p class="text-gray mb-0">Total semester working days tracked: <span class="text-white fw-bold">{{ working_days }} days</span></p>
+            </div>
+        </div>
+
+        <!-- Summary Column -->
+        <div class="col-lg-4">
+            <div class="total-fare-card animate-fade-in">
+                <h5 class="text-white text-opacity-75 mb-3">Estimated Total</h5>
+                <h1 class="display-3 fw-800 text-white mb-4">₹<span id="total-fare-display">0</span></h1>
+                
+                <form id="paymentForm" method="get" action="" onsubmit="return setFareValue()">
+                    <input type="hidden" name="total_fare" id="totalFareInput">
+                    <button type="submit" class="btn btn-light btn-lg w-100 py-3 fw-bold shadow-xl" style="border-radius: 15px;">
+                        Proceed to Payment
+                    </button>
+                </form>
+                <p class="text-white text-opacity-50 mt-3 smaller">Taxes and gateway fees calculated at checkout.</p>
+            </div>
+
+            <div class="mt-4 text-center">
+                <button class="btn glass-card text-gray px-4 py-2" onclick="history.back()">
+                    <i class="fas fa-arrow-left me-2"></i> Back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fare Modal -->
+<div class="modal fade" id="fareModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-premium p-4">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold text-white mb-2">Boarding Option</h3>
+                <p class="text-gray mb-0">Stop: <span id="modal-stop-name" class="text-primary fw-bold"></span></p>
+            </div>
+
+            <div class="d-grid gap-3 mb-4">
+                <div class="fare-option active" id="opt-semester" onclick="selectOption('semester')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold text-white mb-1">Full Semester</div>
+                            <div class="smaller text-gray">Locked for {{ working_days }} working days</div>
+                        </div>
+                        <i class="fas fa-calendar-check text-primary fa-lg"></i>
+                    </div>
+                </div>
+
+                <div class="fare-option" id="opt-custom" onclick="selectOption('custom')">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-bold text-white mb-1">Custom Days</div>
+                            <div class="smaller text-gray">Choose specific travel duration</div>
+                        </div>
+                        <i class="fas fa-edit text-gray fa-lg"></i>
+                    </div>
+                    <div id="custom-input-area" class="d-none">
+                        <div class="input-group">
+                            <input type="number" id="daysInput" min="1" class="form-control-premium text-center" value="1" oninput="calculateFare()">
+                            <span class="input-group-text bg-transparent border-0 text-gray">Days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-3 text-center mb-4 border-primary border-opacity-20">
+                <div class="smaller text-gray text-uppercase fw-bold mb-1">Calculated Total</div>
+                <h2 class="fw-bold text-white mb-0">₹<span id="modal-calculated-fare">0</span></h2>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-6">
+                    <button class="btn glass-card w-100 text-white" data-bs-dismiss="modal">Cancel</button>
+                </div>
+                <div class="col-6">
+                    <button onclick="applyFare()" class="btn-premium w-100">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const workingDays = {{ working_days }};
+    let selectedFare = 0;
+    let selectedStopId = null;
+    let currentMode = 'semester';
+    let fareModal;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fareModal = new bootstrap.Modal(document.getElementById('fareModal'));
+    });
+
+    function openFareModal(id, name, fare) {
+        selectedFare = fare;
+        selectedStopId = id;
+        document.getElementById('modal-stop-name').innerText = name;
+        calculateFare();
+        fareModal.show();
+    }
+
+    function selectOption(mode) {
+        currentMode = mode;
+        document.getElementById('opt-semester').classList.toggle('active', mode === 'semester');
+        document.getElementById('opt-custom').classList.toggle('active', mode === 'custom');
+        document.getElementById('custom-input-area').classList.toggle('d-none', mode !== 'custom');
+        calculateFare();
+    }
+
+    function calculateFare() {
+        let total = 0;
+        if (currentMode === 'semester') {
+            total = selectedFare * workingDays;
+        } else {
+            const days = parseInt(document.getElementById('daysInput').value) || 0;
+            total = days * selectedFare;
+        }
+        document.getElementById('modal-calculated-fare').innerText = total;
+    }
+
+    function applyFare() {
+        const total = document.getElementById('modal-calculated-fare').innerText;
+        document.getElementById('total-fare-display').innerText = total;
+        document.getElementById('totalFareInput').value = total;
+        fareModal.hide();
+    }
+
+    function setFareValue() {
+        const totalFare = document.getElementById('totalFareInput').value;
+        if (!totalFare || totalFare == "0") {
+            alert("Please select a stop and boarding option first.");
+            return false;
+        }
+        const routeId = {{ route.id }};
+        const studentId = '{{ student.student_id }}';
+        const form = document.getElementById('paymentForm');
+        form.action = `/payment_page/${routeId}/${selectedStopId}/${studentId}/`;
+        return true;
+    }
 </script>
+{% endblock %}
+
 </body>
 </html>

@@ -1,119 +1,140 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Add Department | Bus Management</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
+
+{% block title %}Add Department | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
     body {
-      font-family: 'Inter', sans-serif;
-      background: #f9fafb;
+        background-color: var(--dark);
     }
-    .slide-in {
-      animation: slideIn 1s ease-out forwards;
+    
+    .form-container {
+        max-width: 900px;
+        margin: 40px auto;
     }
-    @keyframes slideIn {
-      from {
-        transform: translateY(-20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
+    
+    .form-control-premium {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        color: white;
+        transition: all 0.3s ease;
     }
-    .form-floating-label input:focus + label,
-    .form-floating-label input:not(:placeholder-shown) + label {
-      transform: scale(0.85) translateY(-1.8rem);
-      color: #7c3aed;
+    
+    .form-control-premium:focus {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        color: white;
+        outline: none;
     }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col items-center justify-start px-4 py-10">
 
-  <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-8 slide-in">
-    <h2 class="text-3xl font-bold text-purple-700 mb-6 text-center">Add New Department</h2>
+    .form-section-title {
+        border-left: 4px solid var(--primary);
+        padding-left: 15px;
+        margin-bottom: 25px;
+        margin-top: 40px;
+        color: white;
+    }
 
-    <form method="POST" enctype="multipart/form-data" class="space-y-6">
-      {% csrf_token %}
+    .form-section-title:first-child {
+        margin-top: 0;
+    }
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="form-floating-label relative">
-          <input type="text" name="name" placeholder=" " required class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Department Name</label>
+    textarea.form-control-premium {
+        min-height: 100px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container animate-fade-in">
+    <div class="glass-card p-4 p-md-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-800 display-5 mb-2">Add <span class="text-gradient">Department</span></h1>
+            <p class="text-gray lead">Institutional Infrastructure Setup</p>
         </div>
 
-        <div class="form-floating-label relative">
-          <input type="text" name="department_code" placeholder=" " required class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Department Code</label>
-        </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
 
-        <div class="form-floating-label relative">
-          <input type="date" name="start_date" placeholder=" " required class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Start Date</label>
-        </div>
+            <h4 class="form-section-title fw-bold">Department Identity</h4>
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Department Name</label>
+                    <input type="text" name="name" class="form-control form-control-premium" placeholder="e.g. Information Technology" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Department Code</label>
+                    <input type="text" name="department_code" class="form-control form-control-premium" placeholder="e.g. IT" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Established Year</label>
+                    <input type="number" name="established_year" class="form-control form-control-premium" placeholder="e.g. 1956">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Logo / Icon</label>
+                    <input type="file" name="department_logo" class="form-control form-control-premium">
+                </div>
+            </div>
 
-        <div class="form-floating-label relative">
-          <input type="date" name="end_date" placeholder=" " required class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">End Date</label>
-        </div>
+            <h4 class="form-section-title fw-bold">Timeline & Capacity</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Academic Cycle Start</label>
+                    <input type="date" name="start_date" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Academic Cycle End</label>
+                    <input type="date" name="end_date" class="form-control form-control-premium" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Semester Count</label>
+                    <input type="number" name="semester_count" class="form-control form-control-premium" placeholder="e.g. 8" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Expected Student Capacity</label>
+                    <input type="number" name="number_of_student_in_this_department" class="form-control form-control-premium" placeholder="e.g. 600" required>
+                </div>
+            </div>
 
-        <div class="form-floating-label relative">
-          <input type="number" name="semester_count" placeholder=" " required class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Semester Count</label>
-        </div>
+            <h4 class="form-section-title fw-bold">Leadership & Contact</h4>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Head of Department (HOD)</label>
+                    <input type="text" name="department_head" class="form-control form-control-premium" placeholder="Dr. Name" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Department Email</label>
+                    <input type="email" name="department_email" class="form-control form-control-premium" placeholder="hod@college.edu">
+                </div>
+                <div class="col-12">
+                    <label class="form-label text-gray small fw-bold text-uppercase">Direct Contact Number</label>
+                    <input type="text" name="contact_number" class="form-control form-control-premium" placeholder="Official mobile/intercom">
+                </div>
+            </div>
 
-        <div class="form-floating-label relative">
-          <input type="number" name="number_of_student_in_this_department" placeholder=" " required class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Number of Students</label>
-        </div>
+            <h4 class="form-section-title fw-bold">Details & Remarks</h4>
+            <div class="mb-4">
+                <label class="form-label text-gray small fw-bold text-uppercase">Description</label>
+                <textarea name="description" class="form-control form-control-premium" placeholder="Brief overview of the department..."></textarea>
+            </div>
+            <div class="mb-4">
+                <label class="form-label text-gray small fw-bold text-uppercase">Internal Notes</label>
+                <textarea name="notes" class="form-control form-control-premium" placeholder="Any additional notes for administrative reference..."></textarea>
+            </div>
 
-        <div class="form-floating-label relative">
-          <input type="text" name="department_head" placeholder=" " required class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Department Head</label>
-        </div>
-
-        <div class="form-floating-label relative">
-          <input type="email" name="department_email" placeholder=" " class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Email</label>
-        </div>
-
-        <div class="form-floating-label relative">
-          <input type="text" name="contact_number" placeholder=" " class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Contact Number</label>
-        </div>
-
-        <div class="form-floating-label relative">
-          <input type="number" name="established_year" placeholder=" " class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-          <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Established Year</label>
-        </div>
-
-        <div>
-          <label class="block mb-2 text-gray-600 font-medium">Department Logo</label>
-          <input type="file" name="department_logo" class="w-full block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200" />
-        </div>
-      </div>
-
-      <div class="form-floating-label relative">
-        <textarea name="description" placeholder=" " rows="3" class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"></textarea>
-        <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Description</label>
-      </div>
-
-      <div class="form-floating-label relative">
-        <textarea name="notes" placeholder=" " rows="2" class="peer w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"></textarea>
-        <label class="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3.5 peer-focus:top-1 peer-focus:text-sm peer-focus:text-purple-600">Notes</label>
-      </div>
-
-      <div class="text-center">
-        <button type="submit" class="px-6 py-3 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transform hover:scale-105 transition duration-300">
-          Add Department
-        </button>
-      </div>
-    </form>
-  </div>
-
-</body>
-</html>
+            <div class="mt-5 d-flex gap-3">
+                <button type="submit" class="btn-premium flex-grow-1 justify-content-center py-3">
+                    <i class="fas fa-plus-circle me-2"></i> Register Department
+                </button>
+                <button type="button" onclick="history.back()" class="btn glass-card border-secondary border-opacity-25 text-light px-5">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

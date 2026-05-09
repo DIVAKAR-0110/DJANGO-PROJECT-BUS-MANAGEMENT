@@ -1,53 +1,121 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us</title>
-    <link rel="stylesheet" href="{% static 'css/about.css' %}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-</head>
-<body>
-    <a href="javascript:history.back()" class="back-button">
-    <span class="arrow">&larr;</span> Back
-</a>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Welcome to Our College Bus Management System</h1>
-            <p>Ensuring safe, reliable, and efficient transportation for every student.</p>
-        </div>
-        <div class="hero-image">
-            <img src="{% static 'image/bus_logo.png' %}" alt="Bus" style="width:100px;border-radius:10px;">
-        </div>
-    </section>
-<center>
-    <!-- Mission Section -->
-    <section class="mission">
-        <h2>Our Mission</h2>
-        <p>To provide a seamless, technology-driven bus service for students while enhancing convenience, safety, and real-time tracking.</p>
-    </section>
+{% block title %}About Us | CIT Bus{% endblock %}
 
-    <!-- Team Section -->
-    <section class="team">
-        <h2>Meet the Team</h2>
-        <div class="team-container">
-            <div class="team-member">
-                <img src="{% static 'image/img.png' %}" alt="Team Member">
-                <h3>Divakar R</h3>
-                <p>Project Lead</p>
-                <p>Frontend Developer</p>
-                <p>Backend Developer</p>
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
+    }
+    
+    .hero-about {
+        padding: 100px 0;
+        text-align: center;
+        background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+    }
+
+    .stat-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 30px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--primary);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .team-member-card {
+        background: var(--grad-primary);
+        border-radius: 30px;
+        padding: 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin-top: 40px;
+    }
+
+    .team-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 5px solid rgba(255,255,255,0.2);
+        margin-bottom: 20px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container animate-fade-in">
+    <!-- Hero Section -->
+    <div class="hero-about">
+        <h6 class="text-primary fw-bold text-uppercase mb-3">Our Story</h6>
+        <h1 class="display-3 fw-800 mb-4">Redefining Campus <span class="text-gradient">Logistics</span></h1>
+        <p class="text-gray lead mx-auto" style="max-width: 700px;">
+            We are dedicated to building a safer, smarter, and more efficient transportation network for the next generation of scholars at CIT.
+        </p>
+    </div>
+
+    <!-- Mission & Vision -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="stat-card h-100">
+                <div class="text-primary mb-3"><i class="fas fa-bullseye fa-2x"></i></div>
+                <h3 class="fw-bold text-white mb-3">Our Mission</h3>
+                <p class="text-gray">To provide a seamless, technology-driven bus service that enhances convenience, safety, and real-time accountability for all students.</p>
             </div>
         </div>
-    </section>
-</center>
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 College Bus Management System. All Rights Reserved.</p>
-    </footer>
+        <div class="col-md-6">
+            <div class="stat-card h-100">
+                <div class="text-primary mb-3"><i class="fas fa-eye fa-2x"></i></div>
+                <h3 class="fw-bold text-white mb-3">Our Vision</h3>
+                <p class="text-gray">To become the standard-setter in institutional transport management through continuous innovation and user-centric design.</p>
+            </div>
+        </div>
+    </div>
 
-    <script src="{% static 'js/contactus.js' %}"></script>
-</body>
-</html>
+    <!-- Team Section -->
+    <div class="team-member-card">
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center">
+                <img src="{% static 'image/img.png' %}" class="team-img" alt="Lead Developer">
+            </div>
+            <div class="col-md-8 text-center text-md-start text-white">
+                <h2 class="fw-800 mb-2">Divakar R</h2>
+                <p class="text-white text-opacity-75 mb-4">Founder & Lead Architect</p>
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <span class="badge bg-white bg-opacity-10 px-3 py-2">Fullstack Dev</span>
+                    </div>
+                    <div class="col-auto">
+                        <span class="badge bg-white bg-opacity-10 px-3 py-2">UI/UX Design</span>
+                    </div>
+                    <div class="col-auto">
+                        <span class="badge bg-white bg-opacity-10 px-3 py-2">System Admin</span>
+                    </div>
+                </div>
+                <p class="mt-4 text-white text-opacity-70">
+                    "This project was born out of a simple need: to make the daily commute for CIT students as effortless as their learning journey. We've combined modern tech with institutional needs to create this platform."
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 text-center">
+        <button class="btn glass-card px-5 py-3 text-gray" onclick="history.back()">
+            <i class="fas fa-arrow-left me-2"></i> Back to Home
+        </button>
+    </div>
+</div>
+{% endblock %}

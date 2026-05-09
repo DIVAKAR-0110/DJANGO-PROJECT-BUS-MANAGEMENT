@@ -1,161 +1,282 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Modern Payment Page</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-  <link href="{% static 'css/payment.css' %}" rel="stylesheet">
-  <style>
-    .form-input {
-  @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400;
-}
-.form-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db; /* gray-300 */
-  border-radius: 0.5rem;
-  outline: none;
-}
-.form-input:focus {
-  box-shadow: 0 0 0 2px #60a5fa; /* blue-400 ring */
-}
 
-    .glass {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+{% block title %}Secure Payment | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent),
+                    radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.1), transparent),
+                    var(--dark);
+        min-height: 100vh;
+    }
+    
+    .payment-container {
+        max-width: 800px;
+        margin: 40px auto;
+    }
+
+    .form-input-premium {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        color: white;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-bottom: 16px;
+    }
+
+    .form-input-premium:focus {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        outline: none;
+    }
+
+    .form-input-premium::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .option-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 
     .option-card:hover {
-      transform: scale(1.03);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        background: rgba(255, 255, 255, 0.07);
+        transform: translateY(-5px);
     }
 
-    .form-input {
-      @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400;
+    .option-card.active {
+        border-color: var(--primary);
+        background: rgba(99, 102, 241, 0.1);
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
     }
 
-    .hidden { display: none; }
-  </style>
-</head>
-<body class="bg-gradient-to-br from-indigo-300 to-blue-100 min-h-screen flex items-center justify-center p-4">
-<div>
-  {% if messages %}
-  {% for message in messages %}
-    <p class="text-red-500">{{ message }}</p>
-  {% endfor %}
-  {% endif %}
-</div>
-  <div class="glass w-full max-w-4xl p-8 text-gray-800">
-    <h2 class="text-3xl font-bold mb-8 text-center">Select Payment Method</h2>
-    <form id="payment-form" class="space-y-4" method="post" action="{% url 'process_payment' %}">
-    {% csrf_token %}
-    <input type="hidden" name="student_id" value="{{ student_id }}">
-    <input type="hidden" name="route_id" value="{{ route_id }}">
-    <input type="hidden" name="stop_id" value="{{ stop_id }}">
-    <input type="hidden" name="total_fare" value="{{ total_fare }}">
+    .method-icon {
+        height: 40px;
+        margin-bottom: 15px;
+        object-fit: contain;
+    }
 
-      <div class="grid grid-cols-3 gap-4 mb-8">
-        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
-          <input type="radio" name="payment_method" value="card" class="hidden" checked>
-          <img src="{% static 'image/visa_mastercard.png' %}" alt="Card" class="w-full rounded" />
-          <span class="text-lg text-blue-500 font-semibold mt-2">Credit / Debit Card</span>
-        </label>
+    .hidden-section {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
 
-        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
-          <input type="radio" name="payment_method" value="netbanking" class="hidden">
-          <img src="{% static 'image/netbanking.png' %}" alt="Netbanking" class="w-full rounded" />
-          <span class="text-lg text-blue-500 font-semibold mt-2">Net Banking</span>
-        </label>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
-          <input type="radio" name="payment_method" value="upi" class="hidden">
-          <img src="{% static 'image/upi.png' %}" alt="UPI" class="w-full rounded" />
-          <span class="text-lg text-blue-500 font-semibold mt-2">UPI</span>
-        </label>
+    select.form-input-premium option {
+        background: var(--dark);
+        color: white;
+    }
+</style>
+{% endblock %}
 
-        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
-          <input type="radio" name="payment_method" value="wallet" class="hidden">
-          <img src="{% static 'image/wallet.png' %}" alt="Wallet" class="w-full rounded" />
-          <span class="text-lg text-blue-500 font-semibold mt-2">Digital Wallet</span>
-        </label>
-
-        <label class="option-card bg-white p-4 rounded-xl cursor-pointer flex flex-col items-center transition transform">
-          <input type="radio" name="payment_method" value="prepaid" class="hidden">
-          <img src="{% static 'image/prepaid.png' %}" alt="Prepaid" class="w-full rounded" />
-          <span class="text-lg text-blue-500 font-semibold mt-2">Prepaid Card</span>
-        </label>
-      </div>
-
-      <div id="card-section">
-        <input type="text" class="form-input" placeholder="Cardholder Name" name="card_name" />
-        <input type="text" class="form-input" placeholder="Card Number" name="card_number" />
-        <div class="grid grid-cols-2 gap-4">
-          <input type="text" class="form-input" placeholder="Expiry MM/YY" name="expiry" />
-          <input type="text" class="form-input" placeholder="CVV" name="cvv" />
+{% block content %}
+<div class="payment-container animate-fade-in">
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="alert alert-danger glass-card border-0 text-white">
+                    <i class="fas fa-exclamation-circle me-2"></i> {{ message }}
+                </div>
+            {% endfor %}
         </div>
-      </div>
+    {% endif %}
 
-      <div id="upi-section" class="hidden">
-        <input type="text" class="form-input" placeholder="Enter your UPI ID" name="upi_id" />
-      </div>
+    <div class="glass-card p-4 p-md-5 shadow-2xl">
+        <div class="text-center mb-5">
+            <h6 class="text-primary fw-bold text-uppercase small ls-2">Secure Checkout</h6>
+            <h2 class="fw-800 text-white mb-2">Complete <span class="text-gradient">Payment</span></h2>
+            <p class="text-gray lead">Select your preferred payment method to finalize the transaction.</p>
+        </div>
 
-      <div id="netbanking-section" class="hidden">
-        <select class="form-input" name="bank">
-          <option>Select Your Bank</option>
-          <option>SBI</option>
-          <option>HDFC</option>
-          <option>ICICI</option>
-          <option>AXIS</option>
-        </select>
-      </div>
+        <form id="paymentForm" method="post" action="{% url 'process_payment' %}">
+            {% csrf_token %}
+            <input type="hidden" name="student_id" value="{{ student_id }}">
+            <input type="hidden" name="route_id" value="{{ route_id }}">
+            <input type="hidden" name="stop_id" value="{{ stop_id }}">
+            <input type="hidden" name="total_fare" value="{{ total_fare }}">
 
-      <div id="wallet-section" class="hidden">
-        <input type="text" class="form-input" placeholder="Wallet ID / Phone Number" name="wallet_id" />
-      </div>
+            <!-- Payment Methods Grid -->
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-md-4">
+                    <label class="option-card active" onclick="selectMethod('card', this)">
+                        <input type="radio" name="payment_method" value="card" class="d-none" checked>
+                        <img src="{% static 'image/visa_mastercard.png' %}" alt="Card" class="method-icon rounded bg-white p-1 w-100 h-auto" style="max-height:40px; object-fit:contain;">
+                        <span class="text-white fw-bold small mt-2">Credit / Debit</span>
+                    </label>
+                </div>
+                <div class="col-6 col-md-4">
+                    <label class="option-card" onclick="selectMethod('netbanking', this)">
+                        <input type="radio" name="payment_method" value="netbanking" class="d-none">
+                        <img src="{% static 'image/netbanking.png' %}" alt="Netbanking" class="method-icon rounded bg-white p-1 w-100 h-auto" style="max-height:40px; object-fit:contain;">
+                        <span class="text-white fw-bold small mt-2">Net Banking</span>
+                    </label>
+                </div>
+                <div class="col-6 col-md-4">
+                    <label class="option-card" onclick="selectMethod('upi', this)">
+                        <input type="radio" name="payment_method" value="upi" class="d-none">
+                        <img src="{% static 'image/upi.png' %}" alt="UPI" class="method-icon rounded bg-white p-1 w-100 h-auto" style="max-height:40px; object-fit:contain;">
+                        <span class="text-white fw-bold small mt-2">UPI</span>
+                    </label>
+                </div>
+                <div class="col-6 col-md-6">
+                    <label class="option-card" onclick="selectMethod('wallet', this)">
+                        <input type="radio" name="payment_method" value="wallet" class="d-none">
+                        <img src="{% static 'image/wallet.png' %}" alt="Wallet" class="method-icon rounded bg-white p-1 w-100 h-auto" style="max-height:40px; object-fit:contain;">
+                        <span class="text-white fw-bold small mt-2">Digital Wallet</span>
+                    </label>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="option-card" onclick="selectMethod('prepaid', this)">
+                        <input type="radio" name="payment_method" value="prepaid" class="d-none">
+                        <img src="{% static 'image/prepaid.png' %}" alt="Prepaid" class="method-icon rounded bg-white p-1 w-100 h-auto" style="max-height:40px; object-fit:contain;">
+                        <span class="text-white fw-bold small mt-2">Prepaid Card</span>
+                    </label>
+                </div>
+            </div>
 
-      <div id="prepaid-section" class="hidden">
-        <input type="text" class="form-input" placeholder="Prepaid Card Number" name="prepaid_card_number" />
-        <input type="password" class="form-input" placeholder="PIN" name="prepaid_pin" />
-      </div>
-<center><h1>Amount to Pay : ₹{{ total_fare }}</h1>
-</center>
+            <!-- Dynamic Input Sections -->
+            <div id="card-section" class="mb-4">
+                <input type="text" class="form-input-premium" placeholder="Cardholder Name" name="card_name" required>
+                <input type="text" class="form-input-premium" placeholder="Card Number (16 digits)" name="card_number" required>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <input type="text" class="form-input-premium mb-0" placeholder="MM/YY" name="expiry" required>
+                    </div>
+                    <div class="col-6">
+                        <input type="text" class="form-input-premium mb-0" placeholder="CVV" name="cvv" required>
+                    </div>
+                </div>
+            </div>
 
+            <div id="upi-section" class="hidden-section mb-4">
+                <input type="text" class="form-input-premium" placeholder="Enter your UPI ID (e.g. name@bank)" name="upi_id">
+            </div>
 
-      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg text-lg font-semibold transition-all">
-        Pay Now
-      </button>
+            <div id="netbanking-section" class="hidden-section mb-4">
+                <select class="form-input-premium" name="bank">
+                    <option value="">Select Your Bank</option>
+                    <option value="SBI">State Bank of India</option>
+                    <option value="HDFC">HDFC Bank</option>
+                    <option value="ICICI">ICICI Bank</option>
+                    <option value="AXIS">Axis Bank</option>
+                </select>
+            </div>
 
-      <p id="payment-response" class="text-green-600 text-center font-bold mt-4"></p>
-    </form>
-  </div>
+            <div id="wallet-section" class="hidden-section mb-4">
+                <input type="text" class="form-input-premium" placeholder="Wallet ID / Phone Number" name="wallet_id">
+            </div>
 
-  <script src="{% static 'js/payment.js' %}"></script>
-</body>
+            <div id="prepaid-section" class="hidden-section mb-4">
+                <input type="text" class="form-input-premium" placeholder="Prepaid Card Number" name="prepaid_card_number">
+                <input type="password" class="form-input-premium" placeholder="PIN" name="prepaid_pin">
+            </div>
+
+            <div class="text-center mb-4 p-4 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);">
+                <div class="text-gray small text-uppercase fw-bold mb-1">Total Amount Due</div>
+                <h1 class="text-white fw-800 mb-0">₹{{ total_fare }}</h1>
+            </div>
+
+            <button type="submit" class="btn-premium w-100 py-3 justify-content-center h4 mb-0 shadow-xl">
+                <i class="fas fa-lock me-2"></i> Pay Securely
+            </button>
+            <p id="payment-response" class="text-success text-center fw-bold mt-3 mb-0" style="display: none;"></p>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
 <script>
-  document.getElementById("payNowBtn").addEventListener("click", function(){
-    let formData = new FormData(document.getElementById("paymentForm"));
+    function selectMethod(methodId, element) {
+        // Update active class on cards
+        document.querySelectorAll('.option-card').forEach(card => card.classList.remove('active'));
+        element.classList.add('active');
 
-    fetch("{% url 'process_payment' %}", {
-        method: "POST",
-        body: formData,
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
+        // Hide all sections
+        const sections = ['card-section', 'upi-section', 'netbanking-section', 'wallet-section', 'prepaid-section'];
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add('hidden-section');
+                // Remove required attribute from inputs in hidden sections
+                el.querySelectorAll('input, select').forEach(input => input.removeAttribute('required'));
+            }
+        });
+
+        // Show selected section and add required attribute
+        const activeSection = document.getElementById(methodId + '-section');
+        if (activeSection) {
+            activeSection.classList.remove('hidden-section');
+            activeSection.querySelectorAll('input, select').forEach(input => input.setAttribute('required', 'required'));
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-    if(data.status === "success"){
-        window.location.href = data.redirect_url; // Redirect works now
-    } else {
-        alert(data.message);
-      }
-    });
-  });
+    }
 
+    // Handle AJAX form submission
+    document.getElementById("paymentForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        
+        // Show loading state
+        const btn = this.querySelector('button[type="submit"]');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
+        btn.disabled = true;
+
+        let formData = new FormData(this);
+
+        fetch("{% url 'process_payment' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+                return null;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data) return; // Handled redirect
+            
+            if(data.status === "success" && data.redirect_url){
+                window.location.href = data.redirect_url;
+            } else {
+                const responseEl = document.getElementById('payment-response');
+                responseEl.className = 'text-danger text-center fw-bold mt-3 mb-0';
+                responseEl.style.display = 'block';
+                responseEl.innerText = data.message || "Payment failed. Please try again.";
+                
+                // Reset button
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Fallback: regular submit if JS fetch fails but form should post
+            this.submit();
+        });
+    });
 </script>
-</html>
+{% endblock %}

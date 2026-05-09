@@ -258,7 +258,7 @@ def register_success(request):
 
 def admindashboard(request):
     college=ClgApproved.objects.all()
-    student=ApprovedStudent.objects.all()
+    student=Student.objects.filter(status='Approved')
     college_count=college.count()
     print(college_count)
     student_count=student.count()
@@ -710,7 +710,7 @@ def student_login_form(request):
         raw_password = request.POST.get('password')
 
         try:
-            student = ApprovedStudent.objects.get(email=email)
+            student = Student.objects.get(email=email, status='Approved')
 
 
             # Check hashed password
@@ -720,24 +720,32 @@ def student_login_form(request):
 
             else:
                 messages.error(request, 'Incorrect password.')
-        except ApprovedStudent.DoesNotExist:
+        except Student.DoesNotExist:
             messages.error(request, 'Student with this email does not exist.')
 
     return render(request, 'students_login.html')
 
 
 def student_dashboard(request, student_id):
-    student = get_object_or_404(ApprovedStudent, id=student_id)
+    # Ensure only the logged-in student can view this dashboard
+    if str(request.session.get('student_id')) != str(student_id):
+        messages.error(request, "Unauthorized access. Please log in first.")
+        return redirect('students_login')
+
+    student = get_object_or_404(Student, id=student_id, status='Approved')
     routes = BusRoute.objects.all()
+    # Fetch the latest ticket for the student
+    latest_ticket = Ticket.objects.filter(student=student).order_by('-created_at').first()
     return render(request, 'student_dashboard.html', {
         'student_id': student.id,
         'student': student,
-        'routes': routes
+        'routes': routes,
+        'ticket': latest_ticket
     })
 
 
 def update_student_profile(request, student_id):
-    student = get_object_or_404(ApprovedStudent, id=student_id)
+    student = get_object_or_404(Student, id=student_id, status='Approved')
     routes=BusRoute.objects.all()
 
     if request.method == 'POST':
@@ -772,68 +780,34 @@ def handle_student_request(request, student_id, college_id):
         action = request.POST.get('action')
 
         if action == 'approve':
-            # Move to ApprovedStudent
-            ApprovedStudent.objects.create(
-                full_name=student.full_name,
-                student_id=student.student_id,
-                dob=student.dob,
-                gender=student.gender,
-                blood_group=student.blood_group,
-                student_photo=student.student_photo,
-                course_name=student.course_name,
-                department=student.department,
-                year_semester=student.year_semester,
-                batch_year=student.batch_year,
-                password=student.password,
-                phone_number=student.phone_number,
-                email=student.email,
-                college=student.college.name,  # <-- Corrected here
-                status='Approved'
-            )
+            student.status = 'Approved'
+            student.save()
 
             send_mail(
                 subject='Registration Approved',
-                message=f"Dear {student.full_name},\n\nYour student registration at {student.college.name} has been approved. Your username is :{{  }}",
+                message=f"Dear {student.full_name},\n\nYour student registration at {student.college.name if student.college else 'your college'} has been approved.",
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[student.email],
                 fail_silently=False,
             )
 
-            student.delete()
             messages.success(request, f"{student.full_name} has been approved and notified by email.")
             return redirect('student_request', college_id=college_id)
 
         elif action == 'reject':
             reason = request.POST.get('rejection_reason', '')
-
-            RejectedStudent.objects.create(
-                full_name=student.full_name,
-                student_id=student.student_id,
-                dob=student.dob,
-                gender=student.gender,
-                blood_group=student.blood_group,
-                student_photo=student.student_photo,
-                course_name=student.course_name,
-                department=student.department,
-                year_semester=student.year_semester,
-                batch_year=student.batch_year,
-                password=student.password,
-                phone_number=student.phone_number,
-                email=student.email,
-                college=student.college.name,  # <-- Corrected here
-                status='Rejected',
-                rejection_reason=reason
-            )
+            student.status = 'Rejected'
+            student.rejection_reason = reason
+            student.save()
 
             send_mail(
                 subject='Registration Rejected',
-                message=f"Dear {student.full_name},\n\nYour registration at {student.college.name} has been rejected.\n\nReason: {reason}",
+                message=f"Dear {student.full_name},\n\nYour registration at {student.college.name if student.college else 'your college'} has been rejected.\n\nReason: {reason}",
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[student.email],
                 fail_silently=False,
             )
 
-            student.delete()
             messages.error(request, f"{student.full_name} has been rejected and notified by email.")
             return redirect('student_request', college_id=college_id)
 
@@ -841,8 +815,8 @@ def handle_student_request(request, student_id, college_id):
 
 
 def student_routes(request, student_id):
-    student = get_object_or_404(ApprovedStudent, student_id=student_id)
-    college = ClgApproved.objects.filter(name=student.college).first()
+    student = get_object_or_404(Student, student_id=student_id, status='Approved')
+    college = student.college
 
     if college:
         bus_routes = BusRoute.objects.filter(college=college)
@@ -857,14 +831,14 @@ def student_routes(request, student_id):
     })
 
 def route_detail(request, route_id, student_id):
-    student = get_object_or_404(ApprovedStudent, student_id=student_id)
+    student = get_object_or_404(Student, student_id=student_id, status='Approved')
 
     # Get route
     route = get_object_or_404(BusRoute, id=route_id)
     stops = route.stops.all()
 
     # Try resolving the college name to a ClgApproved instance
-    college_instance = ClgApproved.objects.filter(name__iexact=student.college).first()
+    college_instance = student.college
 
     # Match department in the resolved college
     department = Department.objects.filter(
@@ -897,7 +871,7 @@ def payment_page(request, route_id, stop_id, student_id):
     })
 
 def ticket_page(request, route_id, stop_id, student_id):
-    student = get_object_or_404(ApprovedStudent, student_id=student_id)
+    student = get_object_or_404(Student, student_id=student_id, status='Approved')
     route = get_object_or_404(BusRoute, id=route_id)
     stop = get_object_or_404(Stop, id=stop_id)
     total_fare = request.GET.get('total_fare')
@@ -925,7 +899,7 @@ def ticket_page(request, route_id, stop_id, student_id):
 
 def confirm_payment(request, student_id, route_id, stop_id):
     if request.method == "POST":
-        student = get_object_or_404(ApprovedStudent, id=student_id)
+        student = get_object_or_404(Student, id=student_id, status='Approved')
         route = get_object_or_404(BusRoute, id=route_id)
         stop = get_object_or_404(Stop, id=stop_id)
         total_fare = request.POST.get("total_fare")
@@ -1008,7 +982,7 @@ def process_payment(request):
                 return redirect('payment_error')
 
             # ✅ Fetch student, route, stop
-            student = get_object_or_404(ApprovedStudent, student_id=student_id)
+            student = get_object_or_404(Student, student_id=student_id, status='Approved')
             route = get_object_or_404(BusRoute, id=route_id)
             stop = get_object_or_404(Stop, id=stop_id)
 
@@ -1017,49 +991,57 @@ def process_payment(request):
                 messages.error(request, "No available seats on this bus route.")
                 return redirect('route_detail', route_id=route.id, student_id=student.student_id)
 
-            # ✅ Create Payment object
-            payment = Payment(
-                method=method,
-                student=student,
-                ticket=None,  # Will generate ticket after
-                total_fare=total_fare
-            )
-
-            # Optional fields based on payment method
-            if method == 'card':
-                payment.card_name = request.POST.get("card_name")
-                payment.card_number = request.POST.get("card_number")
-                payment.expiry = request.POST.get("expiry")
-            elif method == 'upi':
-                payment.upi_id = request.POST.get("upi_id")
-            elif method == 'netbanking':
-                payment.bank = request.POST.get("bank")
-            elif method == 'wallet':
-                payment.wallet_id = request.POST.get("wallet_id")
-            elif method == 'prepaid':
-                payment.prepaid_card_number = request.POST.get("prepaid_card_number")
-                payment.prepaid_pin = request.POST.get("prepaid_pin")
-
-            payment.save()
-
-            # ✅ Generate Ticket for this payment
+            from django.db import transaction
+            from django.db.models import F
             from datetime import datetime, timedelta
-            ticket = Ticket.objects.create(
-                student=student,
-                route=route,
-                stop=stop,
-                total_fare=total_fare,
-                start_date=datetime.today(),
-                end_date=datetime.today() + timedelta(days=30),  # Example: 1 month validity
-                qr_data=f"{student.student_id}_{route.id}_{stop.id}_{datetime.now().timestamp()}"
-            )
-            payment.ticket = ticket
-            payment.save()
 
-            # ✅ Update route seats
-            route.filled_seats += 1
-            route.available_seats = max(route.number_of_seats - route.filled_seats, 0)
-            route.save()
+            with transaction.atomic():
+                # ✅ Create Payment object
+                payment = Payment(
+                    method=method,
+                    student=student,
+                    ticket=None,  # Will generate ticket after
+                    total_fare=total_fare
+                )
+
+                # Optional fields based on payment method
+                if method == 'card':
+                    payment.card_name = request.POST.get("card_name")
+                    payment.card_number = request.POST.get("card_number")
+                    payment.expiry = request.POST.get("expiry")
+                elif method == 'upi':
+                    payment.upi_id = request.POST.get("upi_id")
+                elif method == 'netbanking':
+                    payment.bank = request.POST.get("bank")
+                elif method == 'wallet':
+                    payment.wallet_id = request.POST.get("wallet_id")
+                elif method == 'prepaid':
+                    payment.prepaid_card_number = request.POST.get("prepaid_card_number")
+                    payment.prepaid_pin = request.POST.get("prepaid_pin")
+
+                payment.save()
+
+                # ✅ Generate Ticket for this payment
+                ticket = Ticket.objects.create(
+                    student=student,
+                    route=route,
+                    stop=stop,
+                    total_fare=total_fare,
+                    start_date=datetime.today(),
+                    end_date=datetime.today() + timedelta(days=30),  # Example: 1 month validity
+                    qr_data=f"{student.student_id}_{route.id}_{stop.id}_{datetime.now().timestamp()}"
+                )
+                payment.ticket = ticket
+                payment.save()
+
+                # ✅ Update route seats using F() to prevent race conditions
+                route.filled_seats = F('filled_seats') + 1
+                route.save(update_fields=['filled_seats'])
+                
+                # Fetch updated values from the database
+                route.refresh_from_db()
+                route.available_seats = max(route.number_of_seats - route.filled_seats, 0)
+                route.save(update_fields=['available_seats'])
 
             # ✅ Optional: send receipt email
             send_receipt_email(payment)
@@ -1116,10 +1098,10 @@ def rejected_colleges(request):
 
 def view_approved_students(request, college_id):
     college = get_object_or_404(ClgApproved, id=college_id)
-    students = ApprovedStudent.objects.filter(college=college.name)  # college name is stored as string
+    students = Student.objects.filter(college=college, status='Approved')  # unified query
 
     # Optional: get distinct departments for the dropdown filter in HTML
-    departments = ApprovedStudent.objects.filter(college=college.name).values_list('department', flat=True).distinct()
+    departments = Student.objects.filter(college=college, status='Approved').values_list('department', flat=True).distinct()
 
     return render(request, 'approved_students.html', {
         'students': students,
@@ -1149,8 +1131,8 @@ def verify_email_college(request):
         return JsonResponse({'success': False, 'message': 'Email and college required'})
 
     try:
-        student = ApprovedStudent.objects.get(email__iexact=email, college__iexact=college)
-    except ApprovedStudent.DoesNotExist:
+        student = Student.objects.get(email__iexact=email, college__name__iexact=college, status='Approved')
+    except Student.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'No matching student found'})
 
     otp = generate_otp()
@@ -1202,12 +1184,12 @@ def resetting_password(request):
         return JsonResponse({'success': False, 'message': 'Password must be at least 6 characters'})
 
     try:
-        student = ApprovedStudent.objects.get(email=email)
+        student = Student.objects.get(email=email, status='Approved')
         student.password = make_password(new_password)
         student.save()
         request.session.flush()
         return JsonResponse({'success': True, 'message': 'Password reset successfully'})
-    except ApprovedStudent.DoesNotExist:
+    except Student.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Student not found'})
 
 

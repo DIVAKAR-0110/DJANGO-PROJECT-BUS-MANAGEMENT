@@ -1,79 +1,199 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Receipt</title>
-    <link rel="stylesheet" href="{% static 'css/receipt.css' %}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-</head>
-<body>
-    <div class="receipt-wrapper">
-        <!-- College Header -->
-        <header class="college-header">
-            <img src="{% static 'image/college_logo.png' %}" alt="College Logo" class="college-logo">
-            <h1 class="college-name">Your College Name</h1>
-        </header>
 
-        <!-- Receipt Card -->
-        <section class="receipt-card">
-            <!-- Student Info -->
-            <div class="student-info">
-                <img src="{{ payment.student.student_photo.url }}" alt="Student Photo" class="student-photo">
-                <div class="student-details">
-                    <p><strong>Name:</strong> {{ payment.student.full_name }}</p>
-                    <p><strong>ID:</strong> {{ payment.student.student_id }}</p>
-                    <p><strong>Course:</strong> {{ payment.student.course_name }}</p>
-                    <p><strong>Department:</strong> {{ payment.student.department }}</p>
+{% block title %}Payment Receipt | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
+    }
+    
+    .receipt-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .receipt-card {
+        background: #fff;
+        border-radius: 30px;
+        color: #111;
+        overflow: hidden;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    }
+
+    .receipt-header {
+        background: var(--grad-primary);
+        padding: 60px 40px;
+        color: white;
+        text-align: center;
+        position: relative;
+    }
+
+    .receipt-header::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: radial-gradient(circle, transparent 20px, #fff 21px);
+        background-size: 40px 40px;
+        background-position: center;
+    }
+
+    .student-branding {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin-top: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 20px;
+        text-align: left;
+    }
+
+    .student-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        padding: 60px 40px;
+    }
+
+    .detail-item {
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding-bottom: 15px;
+    }
+
+    .detail-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-uppercase: uppercase;
+        color: #999;
+        letter-spacing: 1.5px;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        font-weight: 700;
+        color: #222;
+        font-size: 1.1rem;
+    }
+
+    .qr-footer {
+        background: #f8fafc;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 2px dashed rgba(0,0,0,0.05);
+    }
+
+    .qr-code-box {
+        background: white;
+        padding: 15px;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    @media print {
+        .no-print { display: none !important; }
+        body { background: white !important; }
+        .receipt-card { box-shadow: none; border: 1px solid #eee; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 animate-fade-in">
+    <div class="receipt-container">
+        <div class="receipt-card">
+            <!-- Header -->
+            <div class="receipt-header">
+                <i class="fas fa-file-invoice-dollar fa-3x mb-3"></i>
+                <h2 class="fw-800 mb-1">OFFICIAL RECEIPT</h2>
+                <p class="mb-0 opacity-75">Transaction ID: #TXN-{{ payment.id|stringformat:"05d" }}</p>
+                
+                <div class="student-branding">
+                    <img src="{{ payment.student.student_photo.url }}" class="student-avatar" alt="Avatar">
+                    <div>
+                        <h4 class="fw-bold mb-0 text-white">{{ payment.student.full_name }}</h4>
+                        <p class="mb-0 small opacity-75">{{ payment.student.student_id }} | {{ payment.student.department }}</p>
+                    </div>
                 </div>
             </div>
 
-            <hr>
-
-            <!-- Payment Info -->
-            <div class="payment-info">
-                <p><strong>Route:</strong> {{ payment.ticket.route.route_name }}</p>
-                <p><strong>Stop:</strong> {{ payment.ticket.stop.name }}</p>
-                <p><strong>Payment Method:</strong> {{ payment.method|title }}</p>
-                <p><strong>Total Fare:</strong> ₹{{ payment.total_fare }}</p>
-                <p><strong>Start Date:</strong> {{ payment.ticket.start_date }}</p>
-                <p><strong>End Date:</strong> {{ payment.ticket.end_date }}</p>
+            <!-- Details -->
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Service Type</div>
+                    <div class="detail-value">Campus Bus Pass</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Designated Route</div>
+                    <div class="detail-value text-primary">{{ payment.ticket.route.route_name }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Boarding Stop</div>
+                    <div class="detail-value">{{ payment.ticket.stop.name }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Payment Method</div>
+                    <div class="detail-value">{{ payment.method|title }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Validity Period</div>
+                    <div class="detail-value small">{{ payment.ticket.start_date }} to {{ payment.ticket.end_date }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Paid</div>
+                    <div class="detail-value h3 fw-800 text-dark mb-0">₹{{ payment.total_fare }}</div>
+                </div>
             </div>
 
-            <div class="qr-section">
-                <div id="qrcode"></div>
-                <p>Scan this QR code for verification</p>
+            <!-- Footer -->
+            <div class="qr-footer">
+                <div>
+                    <h6 class="fw-bold mb-1">Verification QR</h6>
+                    <p class="text-muted smaller mb-0">Authorized by {{ payment.student.college }} Transportation Cell</p>
+                </div>
+                <div class="qr-code-box">
+                    <div id="qrcode"></div>
+                </div>
             </div>
+        </div>
 
-            <!-- Buttons -->
-            <div class="receipt-buttons">
-                <button onclick="window.print()" class="print-btn">Print Receipt</button>
-                <a href="javascript:history.back()" class="back-btn">Back</a>
-            </div>
-        </section>
+        <!-- Actions -->
+        <div class="mt-5 d-flex gap-3 no-print">
+            <button onclick="window.print()" class="btn-premium flex-grow-1 py-3 justify-content-center">
+                <i class="fas fa-print me-2"></i> Print Official Receipt
+            </button>
+            <a href="{% url 'student_dashboard' payment.student.id %}" class="btn glass-card py-3 px-4 text-gray">
+                <i class="fas fa-th-large me-2"></i> My Dashboard
+            </a>
+        </div>
     </div>
+</div>
+{% endblock %}
 
-    <!-- GSAP Animations -->
-    <script>
-        gsap.from(".college-header", { duration: 1, y: -50, opacity: 0, ease: "bounce" });
-        gsap.from(".student-info", { duration: 1, x: -100, opacity: 0, delay: 0.5 });
-        gsap.from(".payment-info", { duration: 1, x: 100, opacity: 0, delay: 1 });
-        gsap.from(".qr-section", { duration: 1, scale: 0, opacity: 0, delay: 1.5, ease: "elastic" });
-        gsap.from(".receipt-buttons", { duration: 1, y: 50, opacity: 0, delay: 2 });
-    </script>
-
-    <!-- QR Code Generation -->
-    <script>
-        new QRCode(document.getElementById("qrcode"), {
-            text: "{{ payment.ticket.qr_data }}",
-            width: 150,
-            height: 150,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
-    </script>
-</body>
-</html>
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    new QRCode(document.getElementById("qrcode"), {
+        text: "{{ payment.ticket.qr_data }}",
+        width: 100,
+        height: 100,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+</script>
+{% endblock %}

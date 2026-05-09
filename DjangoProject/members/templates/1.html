@@ -1,106 +1,98 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title style="font-family:Brush Script MT;">Discover the World with Travelix</title>
-    <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: black;
-            overflow: hidden;
-        }
-        .loader, .loader span {
-            width: 10em;
-            height: 10em;
-            border: 0.25em solid white;
-            font-size: 10px;
-            border-radius: 1em;
-            position: absolute;
-            mix-blend-mode: screen;
-        }
-        .loader {
-            background-color: gold;
-            animation: rotating 2s linear infinite;
-        }
-        @keyframes rotating {
-            to {
-                transform: rotate(1turn);
-            }
-        }
-        .loader span {
-            animation: de-rotating 4s linear infinite;
-        }
-        @keyframes de-rotating {
-            from, to {
-                transform: rotate(0deg) scale(0.5);
-            }
-            50% {
-                transform: rotate(-360deg) scale(1.2);
-            }
-        }
-        .loader span:nth-child(1) {
-            top: 5em;
-            left: 5em;
-            background-color: dodgerblue;
-        }
-        .loader span:nth-child(2) {
-            top: -5em;
-            left: 5em;
-            background-color: hotpink;
-        }
-        .loader span:nth-child(3) {
-            top: 5em;
-            left: -5em;
-        }
-        .loader span:nth-child(4) {
-            top: -5em;
-            left: -5em;
-            background-color: limegreen;
-        }
-        .hidden {
-            display: none;
-        }
-        .content {
-            display:none;
-            color: white;
-            font-size: 8em;
-        }
-        .content img{
-            opacity:4px;
-            border-radius:10px;
-        }
-    </style>
-    <script>
-        const loadingTime = 4000;
-        const redirectUrl = '{% url 'clgintropage' %}';
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.querySelector('.loader').classList.add('hidden');
-                document.querySelector('.content').style.display = 'block';
-                setTimeout(function() {
-                    window.location.href = redirectUrl;
-                },2500);
-            }, loadingTime);
-        });
-    </script>
-</head>
-<body>
-{{ csrf_token }}
-    <div class="loader" id="loader">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+
+{% block title %}Travelix | Loading{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .splash-wrapper {
+        text-align: center;
+    }
+
+    .loader-glow {
+        width: 150px;
+        height: 150px;
+        position: relative;
+        margin: 0 auto 40px;
+    }
+
+    .loader-glow::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: var(--grad-primary);
+        filter: blur(40px);
+        opacity: 0.3;
+        animation: pulse 2s infinite;
+    }
+
+    .loader-ring {
+        position: absolute;
+        inset: 0;
+        border: 4px solid transparent;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .loader-ring::after {
+        content: '';
+        position: absolute;
+        inset: 15px;
+        border: 4px solid transparent;
+        border-bottom-color: var(--secondary);
+        border-radius: 50%;
+        animation: spin 2s linear infinite reverse;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.2; }
+        50% { transform: scale(1.2); opacity: 0.4; }
+    }
+
+    .splash-logo {
+        width: 120px;
+        height: 120px;
+        background: white;
+        padding: 20px;
+        border-radius: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="splash-wrapper animate-fade-in">
+    <div class="loader-glow">
+        <div class="loader-ring"></div>
+        <img src="{% static 'image/bus_logo.png' %}" style="position: absolute; inset: 0; margin: auto; width: 60px; height: 60px; filter: drop-shadow(0 0 10px rgba(99,102,241,0.5));" alt="Logo">
     </div>
-    <div class="content">
-        <div style="text-align:center;"><img src="{% static 'image/im.png'%}" alt="imm.jpeg" width="115px" height="125px"><h1>Travelix</h1></div>
-    </div>
-</body>
-</html>
+    
+    <h1 class="display-3 fw-800 text-white mb-2" style="letter-spacing: 5px;">TRAVELIX</h1>
+    <p class="text-gray lead">Discovering your next journey...</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const redirectUrl = "{% url 'clgintropage' %}";
+    setTimeout(() => {
+        window.location.href = redirectUrl;
+    }, 3500);
+</script>
+{% endblock %}

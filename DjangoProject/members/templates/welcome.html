@@ -1,85 +1,80 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Welcome - Select Your College</title>
-    <link rel="icon" icon="image/x-icon" href="{% static 'image/bus_logo.png' %}">
-    <style>
-        body {
-            background: linear-gradient(to right, #00c6ff, #0072ff);
-            font-family: 'Poppins', sans-serif;
-            color: white;
-            text-align: center;
-            padding: 50px;
-            margin: 0;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-top: 50px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 30px;
-        }
-        select, input {
-            padding: 12px 20px;
-            border-radius: 10px;
-            border: none;
-            font-size: 1em;
-            margin-bottom: 20px;
-            width: 250px;
-            color: #0072ff;
-        }
-        .btn {
-            background-color: white;
-            color: #0072ff;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 1em;
-            border: none;
-            transition: 0.3s;
-        }
-        .btn:hover {
-            background-color: #0072ff;
-            color: white;
-        }
-        .error {
-            color: #ff4d4d;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
 
-    <div class="container">
-        <h1>Welcome! Select Your College</h1>
+{% block title %}Verify Institution | CIT Bus{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--dark);
+    }
+    
+    .verify-container {
+        max-width: 500px;
+        margin: 50px auto;
+    }
+
+    .institution-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--primary-light);
+        margin: 0 auto 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 animate-fade-in">
+    <div class="glass-card verify-container p-4 p-md-5">
+        <div class="institution-icon">
+            <i class="fas fa-university"></i>
+        </div>
+        
+        <div class="text-center mb-4">
+            <h3 class="fw-800 text-white mb-2">Institutional Access</h3>
+            <p class="text-gray small">Verify your institution to proceed with management.</p>
+        </div>
 
         {% if error %}
-            <div class="error">{{ error }}</div>
+        <div class="alert glass-card border-danger border-opacity-20 text-danger small mb-4 py-2 text-center">
+            <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
+        </div>
         {% endif %}
 
-        <form action="{% url 'verify_college_email' %}" method="POST" enctype="multipart/form-data">
+        <form action="{% url 'verify_college_email' %}" method="POST">
             {% csrf_token %}
-            <select name="college_name" required>
-                <option value="" disabled selected>Select your college</option>
-                {% for coll in colleges %}
-                    <option value="{{ coll.name }}">{{ coll.name }}</option>
-                {% endfor %}
-            </select>
-            <br>
-            <input type="email" name="admin_email" placeholder="Enter College Admin Email" required>
-            <br><br>
-            <button type="submit" class="btn">Proceed</button>
+            <div class="mb-4">
+                <label class="form-label text-gray small fw-bold text-uppercase">Select Institution</label>
+                <select name="college_name" class="form-select form-control-premium" required>
+                    <option value="" disabled selected>Choose college</option>
+                    {% for coll in colleges %}
+                        <option value="{{ coll.name }}" class="bg-dark">{{ coll.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-gray small fw-bold text-uppercase">Administrator Email</label>
+                <input type="email" name="admin_email" class="form-control-premium" placeholder="admin@institution.edu" required>
+            </div>
+
+            <button type="submit" class="btn-premium w-100 py-3 mb-4">
+                Verify & Proceed
+            </button>
         </form>
 
+        <div class="text-center">
+            <a href="javascript:history.back()" class="text-gray smaller text-decoration-none hover-primary">
+                <i class="fas fa-arrow-left me-1"></i> Back to selection
+            </a>
+        </div>
     </div>
-
-</body>
-</html>
+</div>
+{% endblock %}
