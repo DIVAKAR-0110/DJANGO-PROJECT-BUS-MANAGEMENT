@@ -1,5 +1,6 @@
 # Django Core
 Django==5.0.4
+djangorestframework
 gunicorn
 whitenoise==6.12.0
 
